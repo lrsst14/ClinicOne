@@ -25,7 +25,7 @@ Proyek ini memakai Dockerfile untuk membangun aset frontend dan menjalankan Lara
    DATABASE_URL=${{Postgres.DATABASE_URL}}
    ```
 
-4. Buat domain publik di **Settings > Networking**. Railway menjalankan `php artisan migrate --force` sebelum aplikasi dimulai. Migrasi perbaikan juga membuat tabel `sessions` bila migrasi awal pernah tercatat tanpa tabel tersebut; health check menggunakan endpoint `/up`.
+4. Buat domain publik di **Settings > Networking**. Railway menjalankan `php artisan migrate --force` sebelum aplikasi dimulai, dan container mengulangi pemeriksaan migrasi sebelum server mulai melayani request. Migrasi perbaikan juga membuat tabel `sessions` bila migrasi awal pernah tercatat tanpa tabel tersebut; health check menggunakan endpoint `/up`.
 
 Gunakan `LOG_CHANNEL=stderr` agar exception Laravel tampil di Deploy Logs Railway, bukan hanya tersimpan di file container.
 
