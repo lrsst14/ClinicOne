@@ -7,6 +7,29 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## Deploy ke Railway
+
+Proyek ini memakai Dockerfile untuk membangun aset frontend dan menjalankan Laravel dengan dukungan PostgreSQL.
+
+1. Push repository ini ke GitHub, lalu buat project Railway dari repository tersebut.
+2. Tambahkan database PostgreSQL melalui **New > Database > PostgreSQL**.
+3. Di service aplikasi, tambahkan variables berikut. Ganti `Postgres` dengan nama service database di Railway jika berbeda. Gunakan **Add Reference** untuk mengambil `DATABASE_URL` dari service PostgreSQL; jangan menyalin password database ke repository:
+
+   ```env
+   APP_ENV=production
+   APP_DEBUG=false
+   APP_KEY=<hasil php artisan key:generate --show>
+   APP_URL=https://<domain-aplikasi-railway>
+   DB_CONNECTION=pgsql
+   DATABASE_URL=${{Postgres.DATABASE_URL}}
+   ```
+
+4. Buat domain publik di **Settings > Networking**. Deploy akan menjalankan migrasi database sebelum aplikasi dimulai; health check menggunakan endpoint `/up`.
+
+Konfigurasi koneksi menggunakan `DATABASE_URL` Railway, termasuk URL PostgreSQL yang dibentuk dari variabel service seperti `PGUSER`, `POSTGRES_PASSWORD`, `RAILWAY_PRIVATE_DOMAIN`, dan `PGDATABASE`. Pastikan service aplikasi dan database berada di project/environment Railway yang sama agar private domain dapat dijangkau.
+
+Untuk development lokal tanpa PostgreSQL, atur `DB_CONNECTION=sqlite` di file `.env` lokal. Jangan menaruh `APP_KEY` atau kredensial database di repository.
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
