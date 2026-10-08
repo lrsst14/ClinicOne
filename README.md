@@ -20,11 +20,14 @@ Proyek ini memakai Dockerfile untuk membangun aset frontend dan menjalankan Lara
    APP_DEBUG=false
    APP_KEY=<hasil php artisan key:generate --show>
    APP_URL=https://<domain-aplikasi-railway>
+   LOG_CHANNEL=stderr
    DB_CONNECTION=pgsql
    DATABASE_URL=${{Postgres.DATABASE_URL}}
    ```
 
 4. Buat domain publik di **Settings > Networking**. Deploy akan menjalankan migrasi database sebelum aplikasi dimulai; health check menggunakan endpoint `/up`.
+
+Gunakan `LOG_CHANNEL=stderr` agar exception Laravel tampil di Deploy Logs Railway, bukan hanya tersimpan di file container.
 
 Konfigurasi juga mendukung variabel PostgreSQL `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`, dan `PGPASSWORD` sebagai fallback jika `DATABASE_URL` tidak diatur. Variabel dari service PostgreSQL harus direferensikan ke service aplikasi lewat **Add Reference** di Railway; variabel milik satu service tidak otomatis tersedia pada service lain. Pastikan keduanya ada dalam project dan environment yang sama agar private host dapat dijangkau.
 
