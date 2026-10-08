@@ -26,7 +26,7 @@ Proyek ini memakai Dockerfile untuk membangun aset frontend dan menjalankan Lara
 
 4. Buat domain publik di **Settings > Networking**. Deploy akan menjalankan migrasi database sebelum aplikasi dimulai; health check menggunakan endpoint `/up`.
 
-Konfigurasi koneksi menggunakan `DATABASE_URL` Railway, termasuk URL PostgreSQL yang dibentuk dari variabel service seperti `PGUSER`, `POSTGRES_PASSWORD`, `RAILWAY_PRIVATE_DOMAIN`, dan `PGDATABASE`. Pastikan service aplikasi dan database berada di project/environment Railway yang sama agar private domain dapat dijangkau.
+Konfigurasi juga mendukung variabel PostgreSQL `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`, dan `PGPASSWORD` sebagai fallback jika `DATABASE_URL` tidak diatur. Variabel dari service PostgreSQL harus direferensikan ke service aplikasi lewat **Add Reference** di Railway; variabel milik satu service tidak otomatis tersedia pada service lain. Pastikan keduanya ada dalam project dan environment yang sama agar private host dapat dijangkau.
 
 Untuk development lokal tanpa PostgreSQL, atur `DB_CONNECTION=sqlite` di file `.env` lokal. Jangan menaruh `APP_KEY` atau kredensial database di repository.
 
