@@ -526,7 +526,7 @@
                 <h2 id="signup-title">Buat akun pasien</h2>
                 <p class="intro">Lengkapi data diri untuk menggunakan layanan ClinicOne.</p>
 
-                <form class="signup-form" action="#" method="POST">
+                <form class="signup-form" action="{{ route('pasien.register') }}" method="POST">
                     @csrf
                     <div class="field field--full">
                         <label for="name">Nama lengkap *</label>
@@ -633,6 +633,9 @@
                         <input id="terms" name="terms" type="checkbox" value="1" required>
                         <span>Saya menyetujui <a href="#">Syarat &amp; Ketentuan</a> serta <a href="#">Kebijakan Privasi</a> ClinicOne untuk pengelolaan data pasien.</span>
                     </label>
+                    @error('terms')
+                        <p class="field-error">{{ $message }}</p>
+                    @enderror
 
                     <button class="submit-button" type="submit">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>

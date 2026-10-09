@@ -190,6 +190,17 @@
             line-height: 1.5;
         }
 
+        .registration-status {
+            margin: 0 0 14px;
+            padding: 10px 12px;
+            border: 1px solid #b9e6d2;
+            border-radius: 6px;
+            color: #18734f;
+            background: #effaf4;
+            font-size: 12.5px;
+            line-height: 1.5;
+        }
+
         .login-form {
             display: grid;
             gap: 10px;
@@ -503,6 +514,10 @@
                 <p class="eyebrow">Selamat datang kembali</p>
                 <h2 id="login-title">Masuk ke ClinicOne</h2>
                 <p class="intro">Akses jadwal pemeriksaan dan riwayat kesehatan Anda dengan mudah.</p>
+
+                @if (session('status'))
+                    <p class="registration-status" role="status">{{ session('status') }}</p>
+                @endif
 
                 <form class="login-form" action="#" method="POST">
                     @csrf

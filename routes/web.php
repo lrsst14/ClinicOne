@@ -1,12 +1,14 @@
 <?php
 
 use App\Http\Controllers\DoctorAccessController;
+use App\Http\Controllers\PatientRegistrationController;
 use App\Http\Controllers\RegistrationChartController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('web')->group(function () {
     Route::view('/', 'welcome')->name('home');
-    Route::get('/dokter', [DoctorAccessController::class, 'showLoginForm'])->name('dokter.login');
+    Route::get('/dokter/login', [DoctorAccessController::class, 'showLoginForm'])->name('dokter.login');
+    Route::redirect('/dokter', '/dokter/login')->name('dokter.legacy-login');
     Route::post('/dokter/login', [DoctorAccessController::class, 'login'])->name('dokter.login.submit');
     Route::get('/dokter/dashboard', [DoctorAccessController::class, 'dashboard'])->name('dokter.dashboard');
     Route::get('/dokter/janji', [DoctorAccessController::class, 'kelolaJanji'])->name('dokter.janji');
@@ -18,6 +20,7 @@ Route::middleware('web')->group(function () {
 Route::prefix('pasien')->name('pasien.')->group(function () {
     Route::view('/login', 'pasien.login')->name('login');
     Route::view('/daftar', 'pasien.daftar')->name('daftar');
+    Route::post('/daftar', PatientRegistrationController::class)->name('register');
     Route::view('/dashboard', 'pasien.dashboard')->name('dashboard');
     Route::view('/pendaftaran', 'pasien.pendaftaran')->name('pendaftaran');
     Route::view('/jadwal-dokter', 'pasien.jadwal-dokter')->name('jadwal');
