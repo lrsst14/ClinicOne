@@ -20,6 +20,7 @@ class DoctorLoginPageTest extends TestCase
 
         $this->get('/dokter')
             ->assertOk()
+            ->assertViewIs('dokter.login')
             ->assertSee('Login Dokter')
             ->assertSee('Kode Akses')
             ->assertSee('Halaman ini khusus untuk dokter/admin klinik.');
