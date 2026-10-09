@@ -5,7 +5,7 @@ use App\Http\Controllers\RegistrationChartController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('web')->group(function () {
-    Route::get('/', [DoctorAccessController::class, 'showLoginForm'])->name('home');
+    Route::view('/', 'welcome')->name('home');
     Route::get('/dokter', [DoctorAccessController::class, 'showLoginForm'])->name('dokter.login');
     Route::post('/dokter/login', [DoctorAccessController::class, 'login'])->name('dokter.login.submit');
     Route::get('/dokter/dashboard', [DoctorAccessController::class, 'dashboard'])->name('dokter.dashboard');

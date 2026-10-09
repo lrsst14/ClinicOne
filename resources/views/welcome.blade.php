@@ -55,12 +55,12 @@
         }
 
         .site-header {
-            min-height: 72px;
+            min-height: 64px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 20px;
-            padding: 0 clamp(24px, 6vw, 88px);
+            padding: 0 clamp(24px, 5.5vw, 88px);
             background: #fff;
         }
 
@@ -71,8 +71,8 @@
         }
 
         .brand-mark {
-            width: 38px;
-            height: 38px;
+            width: 30px;
+            height: 30px;
             display: grid;
             place-items: center;
             border-radius: 7px;
@@ -81,14 +81,14 @@
         }
 
         .brand-mark svg {
-            width: 23px;
-            height: 23px;
+            width: 20px;
+            height: 20px;
         }
 
         .brand-name {
             display: block;
             color: #263b59;
-            font-size: 19px;
+            font-size: 18px;
             font-weight: 700;
             letter-spacing: -.04em;
             line-height: 1.1;
@@ -98,7 +98,7 @@
             display: block;
             margin-top: 4px;
             color: #8092ad;
-            font-size: 11px;
+            font-size: 9px;
             line-height: 1;
         }
 
@@ -107,7 +107,7 @@
             align-items: center;
             gap: 9px;
             color: #8092ad;
-            font-size: 13px;
+            font-size: 9px;
         }
 
         .header-help a {
@@ -116,18 +116,18 @@
         }
 
         .header-help svg {
-            width: 18px;
-            height: 18px;
+            width: 14px;
+            height: 14px;
             color: #347cf0;
         }
 
         .hero {
-            min-height: 360px;
+            min-height: 283px;
             display: grid;
             grid-template-columns: minmax(0, 1fr) minmax(320px, .9fr);
             align-items: center;
             gap: 36px;
-            padding: 32px clamp(24px, 7vw, 104px);
+            padding: 11px clamp(24px, 5.5vw, 80px);
             background: #edf5ff;
         }
 
@@ -136,9 +136,9 @@
         }
 
         .eyebrow {
-            margin: 0 0 16px;
+            margin: 0 0 12px;
             color: #347cf0;
-            font-size: 12px;
+            font-size: 9px;
             font-weight: 700;
             letter-spacing: .035em;
             text-transform: uppercase;
@@ -148,7 +148,7 @@
             max-width: 520px;
             margin: 0;
             color: #263b59;
-            font-size: clamp(38px, 4.2vw, 56px);
+            font-size: clamp(28px, 3.2vw, 36px);
             font-weight: 700;
             letter-spacing: -.045em;
             line-height: 1.14;
@@ -156,76 +156,76 @@
 
         .hero-description {
             max-width: 520px;
-            margin: 18px 0 0;
+            margin: 14px 0 0;
             color: #70839e;
-            font-size: 16px;
-            line-height: 1.65;
+            font-size: 12px;
+            line-height: 1.5;
         }
 
         .hero-hint {
             display: flex;
             align-items: center;
-            gap: 9px;
-            margin: 18px 0 0;
+            gap: 7px;
+            margin: 14px 0 0;
             color: #70839e;
-            font-size: 14px;
+            font-size: 10px;
         }
 
         .hero-hint svg {
-            width: 18px;
-            height: 18px;
+            width: 14px;
+            height: 14px;
             flex: 0 0 auto;
             color: #347cf0;
         }
 
         .hero-illustration {
             display: block;
-            width: min(100%, 420px);
-            max-height: 320px;
+            width: min(100%, 300px);
+            max-height: 260px;
             justify-self: center;
             object-fit: contain;
         }
 
         .access-section {
-            width: min(100%, 1000px);
+            width: min(100%, 760px);
             display: flex;
             flex: 1;
             align-self: center;
             flex-direction: column;
             justify-content: center;
-            padding: 42px 28px 46px;
+            padding: 26px 22px 25px;
         }
 
         .section-heading {
-            margin-bottom: 24px;
+            margin-bottom: 18px;
             text-align: center;
         }
 
         .section-heading h2 {
             margin: 0;
             color: #263b59;
-            font-size: 28px;
+            font-size: 18px;
             font-weight: 700;
             letter-spacing: -.025em;
         }
 
         .section-heading p {
-            margin: 8px 0 0;
+            margin: 6px 0 0;
             color: #8092ad;
-            font-size: 14px;
+            font-size: 10px;
         }
 
         .access-grid {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 22px;
+            gap: 15px;
         }
 
         .access-card {
             display: flex;
             min-width: 0;
             flex-direction: column;
-            padding: 24px;
+            padding: 16px;
             border: 1px solid #e7edf6;
             border-radius: 14px;
             background: #fff;
@@ -235,55 +235,55 @@
         .access-card-heading {
             display: flex;
             align-items: center;
-            gap: 13px;
+            gap: 10px;
         }
 
         .access-icon {
-            width: 48px;
-            height: 48px;
+            width: 34px;
+            height: 34px;
             display: grid;
             flex: 0 0 auto;
             place-items: center;
-            border-radius: 12px;
+            border-radius: 9px;
             color: #347cf0;
             background: #eaf2ff;
         }
 
         .access-icon svg {
-            width: 25px;
-            height: 25px;
+            width: 19px;
+            height: 19px;
         }
 
         .access-card h3 {
             margin: 0;
             color: #263b59;
-            font-size: 19px;
+            font-size: 15px;
             font-weight: 650;
             letter-spacing: -.02em;
         }
 
         .access-card-caption {
             display: block;
-            margin-top: 5px;
+            margin-top: 3px;
             color: #8092ad;
-            font-size: 12px;
+            font-size: 8px;
         }
 
         .access-description {
-            min-height: 48px;
-            margin: 16px 0 12px;
+            min-height: 32px;
+            margin: 12px 0 8px;
             color: #70839e;
-            font-size: 14px;
-            line-height: 1.6;
+            font-size: 10px;
+            line-height: 1.5;
         }
 
         .access-benefits {
             display: grid;
-            gap: 9px;
-            margin: 0 0 18px;
+            gap: 6px;
+            margin: 0 0 12px;
             padding: 0;
             color: #70839e;
-            font-size: 13px;
+            font-size: 9px;
             list-style: none;
         }
 
@@ -301,18 +301,18 @@
         }
 
         .access-button {
-            min-height: 48px;
+            min-height: 32px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 12px;
             margin-top: auto;
-            padding: 0 16px;
+            padding: 0 12px;
             border: 1px solid #347cf0;
-            border-radius: 8px;
+            border-radius: 6px;
             color: #347cf0;
             background: #fff;
-            font-size: 14px;
+            font-size: 10px;
             font-weight: 600;
             transition: color 150ms ease, background 150ms ease;
         }
@@ -332,15 +332,15 @@
         }
 
         .access-button svg {
-            width: 20px;
-            height: 20px;
+            width: 17px;
+            height: 17px;
             flex: 0 0 auto;
         }
 
         .access-footnote {
-            margin: 13px 0 0;
+            margin: 10px 0 0;
             color: #8092ad;
-            font-size: 12px;
+            font-size: 8px;
             text-align: center;
         }
 
@@ -350,7 +350,7 @@
         }
 
         .privacy-note {
-            min-height: 56px;
+            min-height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -359,7 +359,7 @@
             border-bottom: 1px solid #edf1f6;
             color: #8092ad;
             background: #fff;
-            font-size: 12px;
+            font-size: 8px;
             text-align: center;
         }
 
@@ -371,15 +371,15 @@
         }
 
         .site-footer {
-            min-height: 48px;
+            min-height: 43px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 20px;
-            padding: 0 clamp(24px, 6vw, 88px);
+            padding: 0 clamp(24px, 5.5vw, 88px);
             color: #8092ad;
             background: #fff;
-            font-size: 11px;
+            font-size: 8px;
         }
 
         .footer-links {
@@ -393,8 +393,8 @@
 
         @media (min-width: 1000px) {
             .hero {
-                padding-right: max(calc((100vw - 1200px) / 2), 80px);
-                padding-left: max(calc((100vw - 1200px) / 2), 80px);
+                padding-right: max(calc((100vw - 1200px) / 2), 6vw);
+                padding-left: max(calc((100vw - 1200px) / 2), 6vw);
             }
         }
 
@@ -512,7 +512,7 @@
 <body>
     <div class="welcome-page">
         <header class="site-header">
-            <a class="brand" href="{{ url('/') }}" aria-label="ClinicOne, halaman utama">
+            <a class="brand" href="{{ route('home') }}" aria-label="ClinicOne, halaman utama">
                 <span class="brand-mark" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none">
                         <path d="M9 4h6v5h5v6h-5v5H9v-5H4V9h5V4Z" fill="currentColor"/>
@@ -523,6 +523,11 @@
                     <span class="brand-caption">Klinik Umum</span>
                 </span>
             </a>
+            <div class="header-help">
+                <span>Butuh bantuan?</span>
+                <a href="tel:+628123456789">Hubungi kami</a>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8A8.5 8.5 0 0 1 8.7 3.9a8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5Z"/></svg>
+            </div>
         </header>
 
         <main>
@@ -532,6 +537,7 @@
                     <h1 id="welcome-title">Selamat datang<br>di ClinicOne</h1>
                     <p class="hero-description">Akses jadwal pemeriksaan dan riwayat kesehatan, atau kelola layanan klinik dalam satu tempat.</p>
                     <p class="hero-hint">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/><path d="M5 6v12"/></svg>
                         Mulai dengan memilih peran Anda di bawah.
                     </p>
                 </div>
@@ -588,7 +594,7 @@
                             <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 8 3 3 7-7"/></svg>Kelola janji dan jadwal pasien</li>
                             <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 8 3 3 7-7"/></svg>Akses layanan dokter/admin klinik</li>
                         </ul>
-                        <a class="access-button" href="{{ route('pasien.login') }}">
+                        <a class="access-button" href="{{ route('dokter.login') }}">
                             Masuk sebagai Dokter
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg>
                         </a>
@@ -598,8 +604,17 @@
             </section>
         </main>
 
+        <div class="privacy-note">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 5v2"/></svg>
+            <span>Informasi medis Anda hanya dapat diakses oleh Anda dan tenaga kesehatan yang menangani pemeriksaan.</span>
+        </div>
+
         <footer class="site-footer" id="footer">
             <span>&copy; {{ date('Y') }} ClinicOne. Kesehatan Anda, prioritas kami.</span>
+            <nav class="footer-links" aria-label="Informasi hukum">
+                <a href="#">Kebijakan Privasi</a>
+                <a href="#">Syarat &amp; Ketentuan</a>
+            </nav>
         </footer>
     </div>
 </body>

@@ -6,17 +6,23 @@ use Tests\TestCase;
 
 class DoctorLoginPageTest extends TestCase
 {
-    public function test_doctor_login_page_is_available_at_home_and_doctor_url(): void
+    public function test_home_shows_role_selection_and_doctor_url_shows_doctor_login(): void
     {
         $this->withoutVite();
 
-        foreach (['/', '/dokter'] as $uri) {
-            $this->get($uri)
-                ->assertOk()
-                ->assertSee('Login Dokter')
-                ->assertSee('Kode Akses')
-                ->assertSee('Halaman ini khusus untuk dokter/admin klinik.');
-        }
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('Bagaimana Anda ingin masuk?')
+            ->assertSee('Masuk sebagai Pasien')
+            ->assertSee('Masuk sebagai Dokter')
+            ->assertSee(route('pasien.login'), false)
+            ->assertSee(route('dokter.login'), false);
+
+        $this->get('/dokter')
+            ->assertOk()
+            ->assertSee('Login Dokter')
+            ->assertSee('Kode Akses')
+            ->assertSee('Halaman ini khusus untuk dokter/admin klinik.');
     }
 
     public function test_doctor_can_login_with_valid_access_code(): void
