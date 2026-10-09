@@ -1,395 +1,54 @@
-@media (min-width: 901px) {
+.notification-button {
+    display: grid;
+    width: 27px;
+    height: 27px;
+    flex: 0 0 auto;
+    place-items: center;
+    border: 1px solid #e6edf6;
+    border-radius: 6px;
+    color: #617894;
+    background: #fff;
+    cursor: pointer;
+    transition: border-color 150ms ease, background 150ms ease, color 150ms ease;
+}
+
+.notification-button:hover {
+    border-color: #b9d2ff;
+    color: #347cf0;
+    background: #f8faff;
+}
+
+.notification-button:focus-visible {
+    outline: 2px solid #347cf0;
+    outline-offset: 2px;
+}
+
+.notification-button svg {
+    width: 14px;
+    height: 14px;
+}
+
+.user-chevron {
+    width: 12px;
+    height: 12px;
+    flex: 0 0 auto;
+    margin-left: 4px;
+    color: #8293ad;
+}
+
+@media (min-width: 681px) {
+    .mobile-menu-toggle {
+        display: none;
+    }
+}
+
+@media (min-width: 901px) and (max-width: 1499px) {
     .dashboard:not(.sidebar-collapsed),
     .app:not(.sidebar-collapsed) {
-        grid-template-columns: 248px minmax(0, 1fr);
+        grid-template-columns: 174px minmax(0, 1fr);
     }
 
     .sidebar {
-        padding: 26px 14px 18px;
-    }
-
-    .brand {
-        gap: 10px;
-        padding: 0 8px;
-    }
-
-    .brand-mark {
-        width: 34px;
-        height: 34px;
-    }
-
-    .brand-mark svg {
-        width: 21px;
-        height: 21px;
-    }
-
-    .brand-name {
-        font-size: 20px;
-    }
-
-    .brand-caption {
-        font-size: 13px;
-    }
-
-    .nav-section-label,
-    .nav-label {
-        margin-top: 34px;
-        margin-bottom: 12px;
-        font-size: 12px;
-    }
-
-    .nav-list {
-        gap: 7px;
-    }
-
-    .nav-link {
-        min-height: 44px;
-        gap: 11px;
-        padding: 0 12px;
-        font-size: 14px;
-    }
-
-    .nav-link svg {
-        width: 18px;
-        height: 18px;
-    }
-
-    .sidebar-bottom {
-        gap: 16px;
-    }
-
-    .clinic-status {
-        padding: 14px 12px;
-        border-radius: 9px;
-    }
-
-    .clinic-status-title,
-    .clinic-status p,
-    .logout,
-    .logout-link {
-        font-size: 13px;
-    }
-
-    .main-column,
-    .main {
-        min-width: 0;
-    }
-
-    .topbar {
-        min-height: 72px;
-        gap: 16px;
-        padding: 0 30px;
-    }
-
-    .breadcrumbs {
-        gap: 12px;
-        font-size: 14px;
-    }
-
-    .topbar-date,
-    .user-name,
-    .user-id {
-        font-size: 13px;
-    }
-
-    .user-initials,
-    .initials {
-        width: 36px;
-        height: 36px;
-        font-size: 14px;
-    }
-
-    .page-content,
-    .content {
-        width: min(100%, 1440px);
-        padding: 34px 32px 24px;
-        font-size: 16px;
-    }
-
-    .page-heading,
-    .welcome-row {
-        margin-bottom: 24px;
-    }
-
-    .page-heading h1,
-    .welcome-heading h1 {
-        font-size: clamp(32px, 2.7vw, 40px);
-    }
-
-    .page-heading p,
-    .welcome-heading p {
-        font-size: 16px;
-    }
-
-    .dashboard-grid,
-    .columns,
-    .schedule-layout,
-    .profile-layout,
-    .history-layout {
-        gap: 22px;
-    }
-
-    .main-stack,
-    .side-stack,
-    .history-sidebar,
-    .record-list {
-        gap: 18px;
-    }
-
-    .page-content :is(.card, .stat-card, .filter-card, .record-card, .calendar-card, .profile-card, .doctor-strip),
-    .content :is(.card, .stat-card, .filter-card, .record-card, .calendar-card, .profile-card, .doctor-strip) {
-        padding: 22px;
-        border-radius: 12px;
-    }
-
-    .page-content h2,
-    .content h2,
-    .page-content .card-title,
-    .content .card-title {
-        font-size: 20px;
-    }
-
-    .page-content h3,
-    .content h3 {
-        font-size: 18px;
-    }
-
-    .page-content :is(p, span, label, th, td, li, small, strong, button, a),
-    .content :is(p, span, label, th, td, li, small, strong, button, a),
-    .page-content :is(.stat-heading, .stat-caption, .booking-code, .arrival-actions),
-    .content :is(.stat-heading, .stat-caption, .booking-code, .arrival-actions) {
-        font-size: 14px;
-    }
-
-    .page-content .page-heading p,
-    .content .welcome-heading p {
-        font-size: 16px;
-    }
-
-    .page-content .schedule-table .day-number {
-        font-size: 20px;
-    }
-
-    .page-content .vital-value,
-    .page-content .next-time strong {
-        font-size: 18px;
-    }
-
-    .page-content .doctor-profile .doctor-name {
-        font-size: 18px;
-    }
-
-    .content .queue-number {
-        font-size: 34px;
-    }
-
-    .page-content :is(.primary-button, .outline-button, .today-button, .week-button),
-    .content :is(.primary-button, .outline-button) {
-        min-height: 46px;
-        gap: 9px;
-        padding-right: 16px;
-        padding-left: 16px;
-        border-radius: 8px;
-    }
-
-    .page-content :is(.field, .filter-control, .value),
-    .content :is(.field, .filter-control, .value),
-    .content .field input,
-    .content .field select {
-        min-height: 44px;
-        font-size: 14px;
-    }
-
-    .page-content textarea.field {
-        min-height: 82px;
-    }
-}
-
-@media (min-width: 681px) and (max-width: 900px) {
-    .page-heading h1,
-    .welcome-heading h1 {
-        font-size: clamp(30px, 3.6vw, 36px);
-    }
-
-    .page-heading p,
-    .welcome-heading p {
-        font-size: 14px;
-    }
-
-    .page-content :is(p, span, label, th, td, li, small, strong, button, a),
-    .content :is(p, span, label, th, td, li, small, strong, button, a),
-    .page-content :is(.stat-heading, .stat-caption, .booking-code, .arrival-actions),
-    .content :is(.stat-heading, .stat-caption, .booking-code, .arrival-actions) {
-        font-size: 13px;
-    }
-}
-
-@media (min-width: 761px) {
-    .welcome-panel {
-        padding: 36px 48px 26px;
-    }
-
-    .welcome-panel .brand-mark {
-        width: 34px;
-        height: 34px;
-    }
-
-    .welcome-panel .brand-mark svg {
-        width: 21px;
-        height: 21px;
-    }
-
-    .doctor-image {
-        width: min(100%, 420px);
-        max-height: 50vh;
-    }
-
-    .welcome-copy h1 {
-        font-size: clamp(32px, 2.6vw, 42px);
-    }
-
-    .welcome-copy p {
-        font-size: 17px;
-    }
-
-    .form-panel {
-        padding: 30px clamp(36px, 6.5vw, 104px) 26px;
-    }
-
-    .login-content,
-    .signup-content {
-        width: min(100%, 600px);
-    }
-
-    .login-content h2,
-    .signup-content h2 {
-        font-size: clamp(34px, 2.6vw, 42px);
-    }
-
-    .help-link,
-    .eyebrow {
-        font-size: 13px;
-    }
-
-    .intro {
-        font-size: 15px;
-    }
-
-    .field label,
-    .form-options,
-    .field-error,
-    .password-hint,
-    .terms-option,
-    .privacy-note,
-    .legal-links,
-    .signup-prompt,
-    .signin-prompt {
-        font-size: 13px;
-    }
-
-    .field input,
-    .field select,
-    .input-wrap input {
-        height: 44px;
-        font-size: 14px;
-    }
-
-    .submit-button {
-        min-height: 46px;
-        font-size: 15px;
-    }
-}
-
-@media (min-width: 761px) and (max-height: 650px) {
-    .welcome-panel {
-        padding: 22px 36px 18px;
-    }
-
-    .doctor-image {
-        max-height: 42vh;
-    }
-
-    .form-panel {
-        padding-top: 18px;
-        padding-bottom: 16px;
-    }
-
-    .login-content h2,
-    .signup-content h2 {
-        font-size: 32px;
-    }
-
-    .field input,
-    .field select,
-    .input-wrap input {
-        height: 38px;
-    }
-
-    .submit-button {
-        min-height: 40px;
-    }
-}
-
-@media (max-width: 760px) {
-    .welcome-copy h1 {
-        font-size: clamp(28px, 7vw, 36px);
-    }
-
-    .login-content h2,
-    .signup-content h2 {
-        font-size: clamp(30px, 7vw, 36px);
-    }
-
-    .field label,
-    .field-error,
-    .password-hint,
-    .terms-option,
-    .privacy-note,
-    .legal-links,
-    .signup-prompt,
-    .signin-prompt {
-        font-size: 13px;
-    }
-
-    .field input,
-    .field select,
-    .input-wrap input {
-        height: 42px;
-        font-size: 14px;
-    }
-
-    .submit-button {
-        min-height: 44px;
-        font-size: 14px;
-    }
-}
-
-@media (max-width: 680px) {
-    .page-heading h1,
-    .welcome-heading h1 {
-        font-size: clamp(28px, 7vw, 34px);
-    }
-
-    .page-heading p,
-    .welcome-heading p {
-        font-size: 14px;
-    }
-
-    .page-content :is(p, span, label, th, td, li, small, strong, button, a),
-    .content :is(p, span, label, th, td, li, small, strong, button, a),
-    .page-content :is(.stat-heading, .stat-caption, .booking-code, .arrival-actions),
-    .content :is(.stat-heading, .stat-caption, .booking-code, .arrival-actions) {
-        font-size: 13px;
-    }
-
-    .page-content :is(.card, .stat-card, .filter-card, .record-card, .calendar-card, .profile-card, .doctor-strip),
-    .content :is(.card, .stat-card, .filter-card, .record-card, .calendar-card, .profile-card, .doctor-strip) {
-        padding: 18px;
-    }
-
-    .page-content :is(.primary-button, .outline-button),
-    .content :is(.primary-button, .outline-button) {
-        min-height: 42px;
-        font-size: 13px;
+        padding: 20px 10px 12px;
     }
 }

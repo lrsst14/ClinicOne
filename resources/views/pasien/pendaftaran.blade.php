@@ -209,16 +209,18 @@
                 </button>
                 <nav class="breadcrumbs" aria-label="Breadcrumb"><span>Halaman pasien</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg><strong>Pendaftaran</strong></nav>
                 <div class="topbar-actions">
-                    <span class="topbar-date">Jumat, 9 Oktober 2026</span>
+                    <span class="topbar-date">{{ now()->locale('id')->translatedFormat('l, j F Y') }}</span>
+                    <button class="notification-button" type="button" aria-label="Notifikasi">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>
+                    </button>
                     <span class="divider" aria-hidden="true"></span>
-                    <button class="user-menu" type="button" aria-label="Akun Nadia Putri"><span class="initials">NP</span><span><span class="user-name">Nadia Putri</span><span class="user-id">Pasien &bull; PS-00128</span></span></button>
+                    <button class="user-menu" type="button" aria-label="Akun Nadia Putri"><span class="initials">NP</span><span><span class="user-name">Nadia Putri</span><span class="user-id">Pasien &bull; PS-00128</span></span><svg class="user-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>
                 </div>
             </header>
 
             <main class="content">
                 <section class="welcome-row" aria-label="Pendaftaran pemeriksaan">
                     <div class="welcome-heading"><h1>Pendaftaran pemeriksaan</h1><p>Lengkapi informasi kunjungan Anda dan kelola janji pemeriksaan dengan mudah.</p></div>
-                    <a class="primary-button" href="{{ route('pasien.dashboard') }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7"/><path d="M5 9v11h14V9m-9 11v-7h4v7"/></svg>Kembali ke beranda</a>
                 </section>
                 <section class="success" aria-label="Status pendaftaran">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/></svg>

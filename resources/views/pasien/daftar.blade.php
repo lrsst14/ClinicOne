@@ -517,7 +517,7 @@
                     <p>Kelola janji dan jadwal pasien dengan mudah.</p>
                 </div>
             </div>
-
+            <p class="panel-copyright">&copy; 2026 ClinicOne. Kesehatan Anda, prioritas kami.</p>
         </aside>
 
         <section class="form-panel" aria-labelledby="signup-title">
@@ -635,6 +635,7 @@
                     </label>
 
                     <button class="submit-button" type="submit">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
                         Daftar akun
                     </button>
                 </form>
@@ -642,6 +643,10 @@
                 <p class="signin-prompt">Sudah punya akun?<a href="{{ url('/pasien/login') }}">Masuk di sini</a></p>
             </div>
 
+            <footer class="legal-links">
+                <a href="#">Kebijakan Privasi</a>
+                <a href="#">Syarat &amp; Ketentuan</a>
+            </footer>
         </section>
     </main>
 

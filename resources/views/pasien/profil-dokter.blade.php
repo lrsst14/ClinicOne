@@ -63,8 +63,8 @@
         .profile-layout { display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(220px, .9fr); align-items: start; gap: 16px; }
         .main-stack, .side-stack { display: grid; min-width: 0; gap: 14px; }
         .card { min-width: 0; padding: 15px; border: 1px solid #e6edf6; border-radius: 9px; background: #fff; box-shadow: 0 3px 10px #29405f05; }
-        .profile-card { display: grid; grid-template-columns: 145px minmax(0, 1fr); align-items: center; gap: 16px; padding: 12px; }
-        .doctor-photo { display: block; width: 100%; height: 153px; border: 1px solid #edf1f6; border-radius: 7px; background: #edf5ff; object-fit: cover; object-position: center 20%; }
+        .profile-card { display: grid; grid-template-columns: 163px minmax(0, 1fr); align-items: center; gap: 16px; padding: 12px; }
+        .doctor-photo { display: block; width: 100%; height: 174px; border: 1px solid #edf1f6; border-radius: 7px; background: #edf5ff; object-fit: cover; object-position: center 20%; }
         .doctor-content { min-width: 0; }
         .doctor-badge, .open-badge { display: inline-flex; align-items: center; padding: 5px 8px; border-radius: 999px; color: #1e9a7a; background: #eaf8f4; font-size: 11px; font-weight: 600; }
         .doctor-content h2 { margin: 9px 0 2px; color: #29405f; font-size: 23.8px; font-weight: 700; letter-spacing: -.03em; }
@@ -97,7 +97,7 @@
         .primary-button svg { width: 13px; height: 13px; }
         .schedule-link { display: block; margin-top: 9px; color: #347cf0; font-size: 11px; text-align: center; }
         .schedule-link:hover, .directions-link:hover { text-decoration: underline; }
-        .clinic-photo { display: block; width: 100%; height: 86px; margin-bottom: 9px; border-radius: 6px; background: #edf5ff; object-fit: cover; }
+        .clinic-photo { display: block; width: 100%; height: 95px; margin-bottom: 9px; border-radius: 6px; background: #edf5ff; object-fit: cover; }
         .clinic-name { display: block; color: #425a79; font-size: 11px; font-weight: 600; }
         .clinic-address { margin: 7px 0; color: #8293ad; font-size: 11px; line-height: 1.5; }
         .clinic-phone { display: flex; align-items: center; gap: 5px; color: #617894; font-size: 11px; }
@@ -195,9 +195,12 @@
                 </button>
                 <nav class="breadcrumbs" aria-label="Breadcrumb"><span>Halaman pasien</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg><strong>Profil Dokter</strong></nav>
                 <div class="topbar-actions">
-                    <span class="topbar-date">Jumat, 9 Oktober 2026</span>
+                    <span class="topbar-date">{{ now()->locale('id')->translatedFormat('l, j F Y') }}</span>
+                    <button class="notification-button" type="button" aria-label="Notifikasi">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>
+                    </button>
                     <span class="topbar-divider" aria-hidden="true"></span>
-                    <button class="user-menu" type="button" aria-label="Akun Nadia Putri"><span class="user-initials" aria-hidden="true">NP</span><span><span class="user-name">Nadia Putri</span><span class="user-id">Pasien &bull; PS-00128</span></span></button>
+                    <button class="user-menu" type="button" aria-label="Akun Nadia Putri"><span class="user-initials" aria-hidden="true">NP</span><span><span class="user-name">Nadia Putri</span><span class="user-id">Pasien &bull; PS-00128</span></span><svg class="user-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>
                 </div>
             </header>
 
