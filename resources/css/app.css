@@ -1,9 +1,64 @@
 @import 'tailwindcss';
 
+@source '../views/**/*.blade.php';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+@keyframes doctor-login-enter {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.doctor-login-enter {
+    animation: doctor-login-enter 500ms ease-out both;
+}
+
+@media (min-width: 761px) and (max-height: 650px) {
+    .doctor-login-enter {
+        padding-top: 4px;
+        padding-bottom: 4px;
+    }
+
+    .doctor-login-intro {
+        margin-bottom: 10px;
+    }
+
+    .doctor-login-form {
+        gap: 7px;
+    }
+
+    .doctor-login-field {
+        gap: 3px;
+    }
+
+    .doctor-login-input-wrap {
+        height: 28px;
+    }
+
+    .doctor-login-submit {
+        min-height: 30px;
+    }
+
+    .doctor-login-privacy {
+        margin-top: 12px;
+        padding-top: 8px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .doctor-login-enter {
+        animation: none;
+    }
 }
