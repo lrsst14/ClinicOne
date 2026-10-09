@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DoctorAccessController;
+use App\Http\Controllers\PatientLoginController;
 use App\Http\Controllers\PatientRegistrationController;
 use App\Http\Controllers\RegistrationChartController;
 use Illuminate\Support\Facades\Route;
@@ -18,14 +19,21 @@ Route::middleware('web')->group(function () {
 });
 
 Route::prefix('pasien')->name('pasien.')->group(function () {
-    Route::view('/login', 'pasien.login')->name('login');
+    Route::get('/login', [PatientLoginController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [PatientLoginController::class, 'login'])
+        ->middleware('throttle:5,1')
+        ->name('login.submit');
     Route::view('/daftar', 'pasien.daftar')->name('daftar');
     Route::post('/daftar', PatientRegistrationController::class)->name('register');
-    Route::view('/dashboard', 'pasien.dashboard')->name('dashboard');
-    Route::view('/pendaftaran', 'pasien.pendaftaran')->name('pendaftaran');
-    Route::view('/jadwal-dokter', 'pasien.jadwal-dokter')->name('jadwal');
-    Route::view('/riwayat', 'pasien.riwayat')->name('riwayat');
-    Route::view('/profil-dokter', 'pasien.profil-dokter')->name('profil-dokter');
+
+    Route::middleware('auth')->group(function () {
+        Route::view('/dashboard', 'pasien.dashboard')->name('dashboard');
+        Route::view('/pendaftaran', 'pasien.pendaftaran')->name('pendaftaran');
+        Route::view('/jadwal-dokter', 'pasien.jadwal-dokter')->name('jadwal');
+        Route::view('/riwayat', 'pasien.riwayat')->name('riwayat');
+        Route::view('/profil-dokter', 'pasien.profil-dokter')->name('profil-dokter');
+        Route::post('/logout', [PatientLoginController::class, 'logout'])->name('logout');
+    });
 });
 
 Route::get('/dashboard/registration-chart', RegistrationChartController::class)

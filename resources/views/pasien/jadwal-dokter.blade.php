@@ -40,7 +40,8 @@
         .clinic-status-title { display: flex; align-items: center; gap: 5px; color: #425a79; font-size: 11px; font-weight: 600; }
         .clinic-status-title svg { width: 11px; height: 11px; color: #347cf0; }
         .clinic-status p { margin: 5px 0 0; color: #8293ad; font-size: 11px; }
-        .logout-link { display: flex; align-items: center; gap: 7px; padding: 0 9px; color: #8293ad; font-size: 11.3px; }
+        .logout-form { margin: 0; }
+        .logout-link { display: flex; align-items: center; gap: 7px; padding: 0 9px; border: 0; color: #8293ad; background: transparent; font: inherit; font-size: 11.3px; text-align: left; cursor: pointer; }
         .logout-link svg { width: 13px; height: 13px; }
 
         .main-column { display: flex; min-width: 0; min-height: 100vh; flex-direction: column; }
@@ -201,7 +202,10 @@
                     <div class="clinic-status-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h18M5 20V6h9v14m0-9h5v9M8 9h2m-2 4h2m-2 4h2m7-1h.01"/></svg>Klinik siap melayani</div>
                     <p>Jam praktik: 08.00 - 12.00</p>
                 </div>
-                <a class="logout-link" href="{{ route('pasien.login') }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 17l5-5-5-5m5 5H3"/><path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"/></svg>Logout</a>
+                <form class="logout-form" action="{{ route('pasien.logout') }}" method="POST">
+                    @csrf
+                    <button class="logout-link" type="submit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 17l5-5-5-5m5 5H3"/><path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"/></svg>Logout</button>
+                </form>
             </div>
         </aside>
         <div class="sidebar-backdrop" aria-hidden="true"></div>

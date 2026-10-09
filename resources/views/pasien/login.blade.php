@@ -201,6 +201,17 @@
             line-height: 1.5;
         }
 
+        .login-error {
+            margin: 0 0 14px;
+            padding: 10px 12px;
+            border: 1px solid #f2c7c7;
+            border-radius: 6px;
+            color: #a33131;
+            background: #fff4f4;
+            font-size: 12.5px;
+            line-height: 1.5;
+        }
+
         .login-form {
             display: grid;
             gap: 10px;
@@ -519,12 +530,16 @@
                     <p class="registration-status" role="status">{{ session('status') }}</p>
                 @endif
 
-                <form class="login-form" action="#" method="POST">
+                @if ($errors->has('email') || $errors->has('password'))
+                    <p class="login-error" role="alert">{{ $errors->first('email') ?: $errors->first('password') }}</p>
+                @endif
+
+                <form class="login-form" action="{{ route('pasien.login.submit') }}" method="POST">
                     @csrf
                     <div class="field">
                         <label for="email">Alamat email</label>
                         <div class="input-wrap">
-                            <input id="email" name="email" type="email" placeholder="nama@email.com" autocomplete="email" required>
+                            <input id="email" name="email" type="email" placeholder="nama@email.com" autocomplete="email" value="{{ old('email') }}" required>
                             <span class="input-icon" aria-hidden="true">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
                                     <rect x="3.5" y="5.5" width="17" height="13" rx="2"/>
@@ -551,7 +566,7 @@
 
                     <div class="form-options">
                         <label class="remember-option" for="remember">
-                            <input id="remember" name="remember" type="checkbox">
+                            <input id="remember" name="remember" type="checkbox" value="1" @checked(old('remember'))>
                             <span>Ingat saya</span>
                         </label>
                         <a href="#">Lupa kata sandi?</a>
