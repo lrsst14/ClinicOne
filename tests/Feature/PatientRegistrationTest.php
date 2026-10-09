@@ -3,8 +3,13 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Illuminate\Database\Connection;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Exceptions;
 use Illuminate\Support\Facades\Hash;
+use PDOException;
 use Tests\TestCase;
 
 class PatientRegistrationTest extends TestCase
@@ -31,8 +36,8 @@ class PatientRegistrationTest extends TestCase
             'terms' => '1',
         ]);
 
-        $response->assertRedirect(route('pasien.login'))
-            ->assertSessionHas('status', 'Pendaftaran berhasil. Akun Anda sudah tersimpan.');
+        $response->assertRedirect(route('pasien.daftar'))
+            ->assertSessionHas('registration_success', true);
 
         $this->assertDatabaseHas('users', [
             'name' => 'Nadia Putri',
@@ -46,9 +51,11 @@ class PatientRegistrationTest extends TestCase
         $this->assertSame('2000-04-12', $user->birth_date->toDateString());
         $this->assertTrue(Hash::check('ClinicOne123', $user->password));
 
-        $this->get(route('pasien.login'))
+        $this->get(route('pasien.daftar'))
             ->assertOk()
-            ->assertSee('Pendaftaran berhasil. Akun Anda sudah tersimpan.');
+            ->assertSee('Pendaftaran berhasil')
+            ->assertSee('href="'.route('pasien.login').'"', false)
+            ->assertSee('id="registration-success-dialog"', false);
     }
 
     public function test_patient_registration_shows_validation_errors_without_creating_an_account(): void
@@ -56,20 +63,59 @@ class PatientRegistrationTest extends TestCase
         $this->withoutVite();
 
         $this->from(route('pasien.daftar'))
+            ->followingRedirects()
             ->post(route('pasien.register'), [])
-            ->assertRedirect(route('pasien.daftar'))
-            ->assertSessionHasErrors([
-                'name' => 'Nama lengkap wajib diisi.',
-                'birth_date' => 'Tanggal lahir wajib diisi.',
-                'gender' => 'Jenis kelamin wajib dipilih.',
-                'phone' => 'Nomor ponsel wajib diisi.',
-                'nik' => 'NIK wajib diisi.',
-                'email' => 'Alamat email wajib diisi.',
-                'password' => 'Kata sandi wajib diisi.',
-                'terms' => 'Anda harus menyetujui syarat dan kebijakan privasi.',
-            ]);
+            ->assertOk()
+            ->assertSee('Nama lengkap wajib diisi.')
+            ->assertSee('Data tidak valid atau tidak lengkap, mohon isi dengan benar.');
 
         $this->assertDatabaseCount('users', 0);
+    }
+
+    public function test_patient_registration_database_failure_returns_to_form_and_reports_exception(): void
+    {
+        $this->withoutVite();
+        Exceptions::fake();
+
+        $shouldFailQuery = true;
+        DB::connection()->beforeExecuting(function (string $query, array $bindings, Connection $connection) use (&$shouldFailQuery): void {
+            if (! $shouldFailQuery) {
+                return;
+            }
+
+            $shouldFailQuery = false;
+
+            throw new QueryException(
+                $connection->getName(),
+                $query,
+                $bindings,
+                new PDOException('Database is unavailable.'),
+            );
+        });
+
+        $this->from(route('pasien.daftar'))
+            ->post(route('pasien.register'), [
+                'name' => 'Nadia Putri',
+                'birth_date' => '2000-04-12',
+                'gender' => 'perempuan',
+                'phone' => '0812 3456 7890',
+                'nik' => '3201011234567890',
+                'email' => 'nadia@example.com',
+                'password' => 'ClinicOne123',
+                'password_confirmation' => 'ClinicOne123',
+                'terms' => '1',
+            ])
+            ->assertRedirect(route('pasien.daftar'))
+            ->assertSessionHas('registration_error', 'Data tidak valid atau tidak lengkap, mohon isi dengan benar.')
+            ->assertSessionMissing('_old_input.password')
+            ->assertSessionMissing('_old_input.password_confirmation');
+
+        $this->get(route('pasien.daftar'))
+            ->assertOk()
+            ->assertSee('Data tidak valid atau tidak lengkap, mohon isi dengan benar.');
+
+        $this->assertDatabaseCount('users', 0);
+        Exceptions::assertReported(QueryException::class);
     }
 
     public function test_patient_registration_form_uses_https_behind_railway_proxy(): void

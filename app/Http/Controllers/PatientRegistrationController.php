@@ -22,7 +22,7 @@ class PatientRegistrationController extends Controller
             'password' => $validated['password'],
         ]);
 
-        return to_route('pasien.login')
-            ->with('status', 'Pendaftaran berhasil. Akun Anda sudah tersimpan.');
+        return to_route('pasien.daftar')
+            ->with('registration_success', true);
     }
 }

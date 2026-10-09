@@ -282,6 +282,18 @@
             font-size: 11.3px;
         }
 
+        .registration-alert {
+            grid-column: 1 / -1;
+            margin: 0;
+            padding: 10px 12px;
+            border: 1px solid #f3caca;
+            border-radius: 7px;
+            color: #a83232;
+            background: #fff4f4;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
         .password-hint {
             display: flex;
             grid-column: 1 / -1;
@@ -373,6 +385,80 @@
 
         .legal-links a {
             color: inherit;
+        }
+
+        .success-dialog {
+            width: min(calc(100% - 32px), 420px);
+            padding: 30px;
+            border: 0;
+            border-radius: 16px;
+            color: #263b59;
+            text-align: center;
+            box-shadow: 0 24px 70px #1d355744;
+        }
+
+        .success-dialog::backdrop {
+            background: #1d355780;
+            backdrop-filter: blur(3px);
+        }
+
+        .success-icon {
+            display: grid;
+            width: 54px;
+            height: 54px;
+            margin: 0 auto 14px;
+            place-items: center;
+            border-radius: 50%;
+            color: #ffffff;
+            background: #2eaa83;
+        }
+
+        .success-icon svg {
+            width: 27px;
+            height: 27px;
+        }
+
+        .success-dialog h2 {
+            margin: 0;
+            font-size: 23px;
+        }
+
+        .success-dialog p {
+            margin: 9px 0 20px;
+            color: #71829b;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .success-dialog-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .success-login-button,
+        .success-close-button {
+            display: inline-flex;
+            min-height: 40px;
+            align-items: center;
+            justify-content: center;
+            padding: 0 17px;
+            border: 0;
+            border-radius: 7px;
+            font: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .success-login-button {
+            color: #ffffff;
+            background: #347cf0;
+        }
+
+        .success-close-button {
+            color: #52647e;
+            background: #edf2f8;
         }
 
         @media (min-width: 761px) and (max-height: 650px) {
@@ -641,9 +727,15 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
                         Daftar akun
                     </button>
+
+                    @if ($errors->any() || session('registration_error'))
+                        <p class="registration-alert" role="alert">
+                            Data tidak valid atau tidak lengkap, mohon isi dengan benar.
+                        </p>
+                    @endif
                 </form>
 
-                <p class="signin-prompt">Sudah punya akun?<a href="{{ url('/pasien/login') }}">Masuk di sini</a></p>
+                <p class="signin-prompt">Sudah punya akun?<a href="{{ route('pasien.login') }}">Masuk di sini</a></p>
             </div>
 
             <footer class="legal-links">
@@ -652,6 +744,24 @@
             </footer>
         </section>
     </main>
+
+    @if (session('registration_success'))
+        <dialog class="success-dialog" id="registration-success-dialog" aria-labelledby="registration-success-title" aria-describedby="registration-success-description">
+            <div class="success-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m5 12 4 4L19 6"/>
+                </svg>
+            </div>
+            <h2 id="registration-success-title">Pendaftaran berhasil</h2>
+            <p id="registration-success-description">Akun pasien Anda sudah tersimpan. Silakan masuk untuk melanjutkan.</p>
+            <div class="success-dialog-actions">
+                <a class="success-login-button" href="{{ route('pasien.login') }}">Masuk</a>
+                <form method="dialog">
+                    <button class="success-close-button" type="submit">Tutup</button>
+                </form>
+            </div>
+        </dialog>
+    @endif
 
     <script>
         document.querySelectorAll('.password-toggle').forEach((toggle) => {
@@ -664,6 +774,12 @@
                 toggle.setAttribute('aria-label', isPasswordHidden ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi');
             });
         });
+
+        const registrationSuccessDialog = document.getElementById('registration-success-dialog');
+
+        if (registrationSuccessDialog instanceof HTMLDialogElement) {
+            registrationSuccessDialog.showModal();
+        }
     </script>
 </body>
 </html>
