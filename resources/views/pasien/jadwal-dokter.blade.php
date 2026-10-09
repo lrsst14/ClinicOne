@@ -166,10 +166,13 @@
             .side-stack { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
         }
         @media (max-width: 430px) {
-            .doctor-strip { gap: 8px; padding: 9px; }
-            .doctor-info { min-width: 65px; }
-            .strip-divider { margin: 0 1px; }
-            .open-badge { padding: 5px 6px; font-size: 11px; }
+            .doctor-strip { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 10px; padding: 9px; }
+            .doctor-photo { grid-column: 1; grid-row: 1; }
+            .doctor-info { grid-column: 2; grid-row: 1; min-width: 0; }
+            .strip-divider { display: none; }
+            .hours-icon { grid-column: 1; grid-row: 2; }
+            .hours-copy { grid-column: 2; grid-row: 2; min-width: 0; }
+            .open-badge { grid-column: 1 / -1; justify-self: start; margin-left: 0; padding: 5px 6px; font-size: 11px; }
             .calendar-heading { align-items: flex-start; flex-direction: column; }
             .calendar-controls { align-self: flex-end; }
             .side-stack { grid-template-columns: 1fr; }

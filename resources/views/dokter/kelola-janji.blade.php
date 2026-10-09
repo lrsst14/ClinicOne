@@ -336,13 +336,13 @@
                 </div>
 
                 <div class="mt-6 rounded-2xl border border-slate-200 bg-[#edf5ff] px-4 py-3 text-sm text-slate-600">
-                    <div class="flex items-center justify-between gap-4">
+                    <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                         <div class="flex items-center gap-2 text-slate-500">
                             <span class="flex h-5 w-5 items-center justify-center rounded-full bg-[#dfeefe] text-[#2d6ef5]">i</span>
                             <span>1 janji menunggu konfirmasi Anda.</span>
                         </div>
 
-                        <div class="flex items-center gap-3 text-xs font-medium">
+                        <div class="flex flex-wrap items-center gap-2 text-xs font-medium sm:gap-3">
                             <span class="inline-flex items-center gap-1.5 rounded-full bg-white px-2 py-1 text-slate-600">
                                 <span class="h-2 w-2 rounded-full bg-[#f4b63f]"></span>
                                 Status janji

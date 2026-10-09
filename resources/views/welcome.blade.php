@@ -398,6 +398,41 @@
             }
         }
 
+        @media (max-width: 760px) {
+            .hero {
+                min-height: 0;
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 36px 28px 30px;
+                text-align: center;
+            }
+
+            .hero-copy {
+                margin: 0 auto;
+            }
+
+            .hero h1,
+            .hero-description {
+                margin-right: auto;
+                margin-left: auto;
+            }
+
+            .hero-hint {
+                justify-content: center;
+            }
+
+            .hero-illustration {
+                width: min(60%, 360px);
+                max-height: 250px;
+            }
+
+            .access-section {
+                width: min(100%, 720px);
+                flex: initial;
+                padding: 32px 24px;
+            }
+        }
+
         @media (max-width: 620px) {
             .site-header {
                 min-height: 64px;
@@ -425,18 +460,18 @@
 
             .hero h1 {
                 margin: 0 auto;
-                font-size: clamp(32px, 8vw, 42px);
+                font-size: clamp(30px, 8vw, 38px);
             }
 
             .hero-description {
                 margin: 14px auto 0;
-                font-size: 15px;
+                font-size: 14px;
             }
 
             .hero-hint {
                 justify-content: center;
                 margin-top: 14px;
-                font-size: 13px;
+                font-size: 12px;
             }
 
             .hero-illustration {
@@ -446,25 +481,6 @@
 
             .access-section {
                 padding: 34px 20px;
-            }
-
-            .registration-chart {
-                width: calc(100% - 28px);
-                margin-bottom: 30px;
-                padding: 18px 12px;
-            }
-
-            .registration-chart-heading h2 {
-                font-size: 19px;
-            }
-
-            .registration-chart-heading p {
-                max-width: 230px;
-                line-height: 1.5;
-            }
-
-            .registration-chart-total {
-                font-size: 24px;
             }
 
             .section-heading {
@@ -480,7 +496,45 @@
                 min-height: 0;
             }
 
+            .access-card {
+                padding: 20px;
+            }
+
+            .access-icon {
+                width: 40px;
+                height: 40px;
+            }
+
+            .access-card h3 {
+                font-size: 17px;
+            }
+
+            .access-card-caption {
+                font-size: 11px;
+            }
+
+            .access-description {
+                margin-top: 14px;
+                font-size: 13px;
+            }
+
+            .access-benefits {
+                gap: 8px;
+                font-size: 12px;
+            }
+
+            .access-button {
+                min-height: 44px;
+                font-size: 13px;
+            }
+
+            .access-footnote {
+                font-size: 10px;
+            }
+
             .privacy-note {
+                padding: 12px 20px;
+                font-size: 11px;
                 line-height: 1.5;
             }
 
@@ -489,6 +543,12 @@
                 flex-direction: column;
                 gap: 10px;
                 padding: 14px 20px;
+                font-size: 10px;
+            }
+
+            .footer-links {
+                flex-wrap: wrap;
+                gap: 16px;
             }
         }
 
@@ -504,7 +564,14 @@
             }
 
             .access-card {
-                padding: 18px;
+                padding: 16px;
+            }
+
+            .privacy-note {
+                align-items: flex-start;
+                gap: 8px;
+                padding-right: 16px;
+                padding-left: 16px;
             }
         }
     </style>
