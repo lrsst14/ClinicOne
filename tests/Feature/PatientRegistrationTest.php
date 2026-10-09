@@ -107,13 +107,13 @@ class PatientRegistrationTest extends TestCase
                 'terms' => '1',
             ])
             ->assertRedirect(route('pasien.daftar'))
-            ->assertSessionHas('registration_error', 'Pendaftaran belum dapat diproses karena koneksi database bermasalah. Silakan coba lagi beberapa saat.')
+            ->assertSessionHas('registration_error', 'Pendaftaran gagal diproses karena ada masalah pada server. Silakan coba kembali nanti.')
             ->assertSessionMissing('_old_input.password')
             ->assertSessionMissing('_old_input.password_confirmation');
 
         $this->get(route('pasien.daftar'))
             ->assertOk()
-            ->assertSee('Pendaftaran belum dapat diproses karena koneksi database bermasalah. Silakan coba lagi beberapa saat.')
+            ->assertSee('Pendaftaran gagal diproses karena ada masalah pada server. Silakan coba kembali nanti.')
             ->assertDontSee('Data tidak valid atau tidak lengkap, mohon isi dengan benar.');
 
         $this->assertDatabaseCount('users', 0);
