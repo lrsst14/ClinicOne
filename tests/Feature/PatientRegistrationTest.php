@@ -72,6 +72,19 @@ class PatientRegistrationTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    public function test_patient_registration_form_uses_https_behind_railway_proxy(): void
+    {
+        $this->withoutVite();
+
+        $this->withHeaders([
+            'X-Forwarded-Proto' => 'https',
+            'X-Forwarded-Host' => 'clinicone-production.up.railway.app',
+        ])
+            ->get(route('pasien.daftar'))
+            ->assertOk()
+            ->assertSee('action="https://clinicone-production.up.railway.app/pasien/daftar"', false);
+    }
+
     public function test_patient_registration_rejects_duplicate_email_and_nik(): void
     {
         $this->withoutVite();
