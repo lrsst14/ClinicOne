@@ -159,6 +159,34 @@
                     </div>
                 </div>
 
+                <section
+                    class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"
+                    data-registration-chart
+                    data-endpoint="{{ route('dashboard.registration-chart') }}"
+                    aria-labelledby="registration-chart-title"
+                >
+                    <div class="mb-4 flex flex-wrap items-end justify-between gap-4">
+                        <div>
+                            <h2 id="registration-chart-title" class="text-base font-bold text-slate-900">Pendaftaran akun</h2>
+                            <p class="mt-1 text-xs text-slate-400">Jumlah akun baru per hari selama 7 hari terakhir.</p>
+                        </div>
+                        <div class="text-right">
+                            <p id="registration-total" class="text-2xl font-bold tabular-nums text-blue-600" aria-live="polite">—</p>
+                            <p class="mt-1 text-[11px] text-slate-400">Total 7 hari</p>
+                        </div>
+                    </div>
+                    <p id="registration-chart-status" class="mb-2 min-h-[18px] text-xs text-slate-400" role="status" aria-live="polite">
+                        Memuat data pendaftaran...
+                    </p>
+                    <svg
+                        class="h-auto w-full overflow-visible"
+                        viewBox="0 0 700 260"
+                        role="img"
+                        aria-label="Grafik jumlah pendaftaran akun selama tujuh hari terakhir"
+                        data-chart-svg
+                    ></svg>
+                </section>
+
                 <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
                     <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
                         <div>

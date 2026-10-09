@@ -31,7 +31,8 @@ class RegistrationChartTest extends TestCase
             'updated_at' => now()->addDay(),
         ]);
 
-        $response = $this->getJson(route('dashboard.registration-chart'));
+        $response = $this->withSession(['doctor_authenticated' => true])
+            ->getJson(route('dashboard.registration-chart'));
 
         $response->assertOk()
             ->assertHeader('Cache-Control', 'no-store, private')
@@ -47,9 +48,17 @@ class RegistrationChartTest extends TestCase
             ]);
     }
 
-    public function test_home_page_displays_the_registration_chart(): void
+    public function test_registration_chart_requires_a_doctor_session(): void
     {
-        $this->get('/')
+        $this->getJson(route('dashboard.registration-chart'))
+            ->assertForbidden();
+    }
+
+    public function test_doctor_dashboard_displays_the_registration_chart(): void
+    {
+        $this->withoutVite()
+            ->withSession(['doctor_authenticated' => true])
+            ->get(route('dokter.dashboard'))
             ->assertOk()
             ->assertSee('Pendaftaran akun')
             ->assertSee('data-registration-chart', false)

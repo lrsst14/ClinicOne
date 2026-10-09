@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class RegistrationChartController extends Controller
 {
-    public function __invoke(): JsonResponse
+    public function __invoke(Request $request): JsonResponse
     {
+        abort_unless($request->session()->get('doctor_authenticated'), 403);
+
         $firstDay = today()->subDays(6)->startOfDay();
         $lastDay = now();
 

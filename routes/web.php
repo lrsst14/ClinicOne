@@ -1,10 +1,7 @@
 <?php
 
-<<<<<<< HEAD
-use App\Http\Controllers\RegistrationChartController;
-=======
 use App\Http\Controllers\DoctorAccessController;
->>>>>>> e026cd97d00fa4f4e3ba1970b764fd128d26def7
+use App\Http\Controllers\RegistrationChartController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('web')->group(function () {

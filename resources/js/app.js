@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 const chart = document.querySelector('[data-registration-chart]');
 
 if (chart instanceof HTMLElement) {
@@ -45,13 +44,13 @@ if (chart instanceof HTMLElement) {
                 x2: width - right,
                 y1: y,
                 y2: y,
-                stroke: '#334155',
+                stroke: '#e7edf6',
                 'stroke-width': '1',
             });
             const label = createSvgElement('text', {
                 x: left - 12,
                 y: y + 4,
-                fill: '#94a3b8',
+                fill: '#8092ad',
                 'font-size': '11',
                 'text-anchor': 'end',
             });
@@ -81,7 +80,7 @@ if (chart instanceof HTMLElement) {
                 cx: point.x,
                 cy: point.y,
                 r: '5',
-                fill: '#0f172a',
+                fill: '#ffffff',
                 stroke: '#38bdf8',
                 'stroke-width': '3',
             });
@@ -89,7 +88,7 @@ if (chart instanceof HTMLElement) {
             const dateLabel = createSvgElement('text', {
                 x: point.x,
                 y: height - 12,
-                fill: '#94a3b8',
+                fill: '#8092ad',
                 'font-size': '11',
                 'text-anchor': 'middle',
             });
@@ -149,7 +148,6 @@ if (chart instanceof HTMLElement) {
         refreshChart();
     }
 }
-=======
 const accessForm = document.querySelector('[data-doctor-login-form]');
 const accessInput = document.querySelector('#access-code');
 const accessToggle = document.querySelector('[data-toggle-access-code]');
@@ -316,4 +314,3 @@ document.addEventListener('keydown', (event) => {
 		closeAppointmentModal();
 	}
 });
->>>>>>> e026cd97d00fa4f4e3ba1970b764fd128d26def7
