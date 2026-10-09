@@ -9,7 +9,7 @@
 </head>
 <body class="bg-[#f3f4f7] font-sans text-slate-800 antialiased">
     <div class="flex min-h-screen">
-        <aside id="doctor-sidebar" data-doctor-sidebar class="fixed inset-y-0 left-0 z-40 flex w-56 -translate-x-full flex-col justify-between border-r border-slate-200 bg-white px-4 py-6 transition-transform duration-300 ease-in-out md:translate-x-0">
+        <aside id="doctor-sidebar" data-doctor-sidebar class="fixed inset-y-0 left-0 z-40 flex w-[184px] -translate-x-full flex-col justify-between border-r border-slate-200 bg-white px-3.5 py-6 transition-transform duration-300 ease-in-out md:translate-x-0">
             <div>
                 <div class="mb-8 flex items-center gap-2.5">
                     <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#296cff] text-white shadow-sm">
@@ -44,7 +44,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8 3v3m8-3v3M4 7h16M5 5h14a1 1 0 011 1v13H4V6a1 1 0 011-1zm4 7 1.5 1.5L13 11" />
                         </svg>
-                        Pengaturan
+                        Pengaturan Jadwal
                     </a>
 
                     <a href="{{ route('dokter.profil') }}" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-900">
@@ -79,7 +79,7 @@
 
         <button type="button" data-doctor-sidebar-overlay aria-label="Tutup menu" class="fixed inset-0 z-30 hidden bg-slate-900/40 md:hidden"></button>
 
-        <main data-doctor-main class="ml-0 flex-1 md:ml-56">
+        <main data-doctor-main class="ml-0 min-w-0 flex-1 md:ml-[184px]">
             <header class="border-b border-slate-200 bg-white px-4 py-5 sm:px-6">
                 <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
                     <div class="flex min-w-0 items-start gap-3">
@@ -90,7 +90,7 @@
                         </button>
                         <div>
                             <p class="text-[13px] font-medium text-slate-400">Manajemen pasien</p>
-                            <h1 class="mt-1 text-4xl font-bold tracking-tight text-slate-900">Kelola Janji</h1>
+                            <h1 class="mt-1 text-3xl font-bold tracking-tight text-slate-900">Kelola Janji</h1>
                             <p class="mt-1 text-sm text-slate-400">Kelola dan konfirmasi janji pasien.</p>
                         </div>
                     </div>
@@ -98,13 +98,19 @@
                     <div class="flex items-center justify-end gap-3 sm:gap-4">
                         <p class="whitespace-nowrap text-[10px] text-slate-500 sm:hidden">{{ now()->format('d/m/Y') }}</p>
                         <p class="hidden whitespace-nowrap text-xs text-slate-500 sm:block">{{ now()->locale('id')->translatedFormat('l, j F Y') }}</p>
-                        <div class="flex items-center gap-3 rounded-full border border-slate-200 bg-white px-2 py-1.5 shadow-sm">
-                            <div class="flex h-9 w-9 items-center justify-center rounded-full bg-[#dfeefd] text-xs font-bold text-[#2d6ae5]">A</div>
+                        <button type="button" aria-label="Notifikasi" class="relative flex size-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:bg-slate-50">
+                            <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" />
+                            </svg>
+                            <span class="absolute right-2 top-2 size-1.5 rounded-full bg-[#347cf0]"></span>
+                        </button>
+                        <div class="flex items-center gap-2.5 rounded-full border border-slate-200 bg-white px-2 py-1.5 shadow-sm">
+                            <img src="{{ asset('img/Doctor_portrait.png') }}" alt="" class="size-9 rounded-full object-cover">
                             <div class="mr-1 leading-tight">
                                 <p class="text-sm font-semibold text-slate-800">dr. Andi</p>
                                 <p class="text-[11px] text-slate-400">Dokter Umum</p>
                             </div>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                             </svg>
                         </div>
@@ -112,8 +118,8 @@
                 </div>
             </header>
 
-            <div class="px-6 py-6">
-                <div class="grid grid-cols-4 gap-4">
+            <div class="px-4 py-5 sm:px-6 sm:py-6">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                     <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
                         <div class="flex items-start justify-between gap-3">
                             <div>
@@ -175,8 +181,8 @@
                     </div>
                 </div>
 
-                <div class="mt-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                    <div class="grid grid-cols-[1.2fr_1fr_1fr_auto] items-end gap-4">
+                <div class="mt-5 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <div class="grid grid-cols-1 items-end gap-4 sm:grid-cols-2 xl:grid-cols-[1.2fr_1fr_1fr_auto]">
                         <div>
                             <label class="mb-2 block text-sm font-medium text-slate-600">Cari pasien</label>
                             <div class="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5">
@@ -223,7 +229,7 @@
                     </div>
                 </div>
 
-                <div class="mt-6 rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+                <div class="mt-5 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
                     <div class="flex items-center justify-between px-5 py-4 border-b border-slate-200 bg-white">
                         <div class="flex items-center gap-3">
                             <h2 class="text-[18px] font-bold text-slate-900">Daftar Janji Pasien</h2>
@@ -366,7 +372,7 @@
         </main>
 
         <div id="appointment-detail-modal" data-appointment-modal class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/40 p-4" aria-hidden="true">
-            <section role="dialog" aria-modal="true" aria-labelledby="appointment-detail-title" class="w-full max-w-xl overflow-hidden rounded-2xl bg-white shadow-2xl">
+            <section role="dialog" aria-modal="true" aria-labelledby="appointment-detail-title" class="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl">
                 <header class="flex items-start justify-between border-b border-slate-200 px-5 py-4">
                     <div>
                         <h2 id="appointment-detail-title" class="text-xl font-bold text-slate-800">Detail Janji</h2>
@@ -433,9 +439,27 @@
                     </div>
                 </div>
 
-                <footer class="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 bg-slate-50 px-5 py-4">
-                    <p class="text-xs text-slate-500">Data pribadi pasien ditampilkan secara terbatas.</p>
-                    <button type="button" data-close-appointment-modal class="rounded-xl bg-[#2d6ef5] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#245fe3]">Tutup</button>
+                <footer class="border-t border-slate-200 bg-slate-50 px-5 py-4">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <button type="button" disabled class="inline-flex cursor-not-allowed items-center gap-2 rounded-lg bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-400" aria-label="Tandai selesai setelah janji dikonfirmasi">
+                            <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="12" cy="12" r="9" />
+                                <path d="m8.5 12 2.3 2.3 4.8-5" />
+                            </svg>
+                            Tandai Selesai
+                        </button>
+                        <div class="flex items-center gap-2">
+                            <button type="button" class="rounded-lg border border-[#f2caca] bg-white px-3 py-2 text-xs font-semibold text-[#d14a4a] transition hover:bg-[#fff1f1]">Tolak</button>
+                            <button type="button" class="inline-flex items-center gap-1.5 rounded-lg bg-[#347cf0] px-3 py-2 text-xs font-semibold text-white transition hover:bg-[#286de0]">
+                                <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="m5 12 4 4L19 6" />
+                                </svg>
+                                Terima
+                            </button>
+                        </div>
+                    </div>
+                    <p class="mt-3 text-[11px] text-slate-500">Tandai Selesai aktif setelah janji dikonfirmasi dan konsultasi selesai.</p>
+                    <p class="mt-1 text-[10px] text-slate-400">Data pribadi ilustratif · NIK dan No. HP disamarkan.</p>
                 </footer>
             </section>
         </div>

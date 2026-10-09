@@ -9,7 +9,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="m-0 min-h-screen font-sans text-slate-800 antialiased">
-    <main class="grid min-h-screen grid-cols-1 min-[761px]:grid-cols-[minmax(340px,42%)_minmax(0,1fr)]">
+    <main class="grid min-h-screen grid-cols-1 min-[761px]:grid-cols-[minmax(340px,47.3%)_minmax(0,1fr)]">
         <section class="flex min-h-0 flex-col bg-[#edf5ff] px-[clamp(22px,6vw,40px)] pt-5 pb-[18px] min-[761px]:min-h-screen min-[761px]:px-[9%] min-[761px]:py-[29px]">
             <a href="{{ route('home') }}" class="flex w-fit items-center gap-2.5 no-underline" aria-label="ClinicOne, halaman utama">
                 <span class="flex size-[25px] items-center justify-center rounded-[6px] bg-[#347cf0] text-white min-[761px]:size-[34px]">
@@ -32,17 +32,23 @@
             </div>
         </section>
 
-        <section class="flex min-h-0 flex-col justify-center bg-white px-[clamp(22px,6vw,40px)] pt-[18px] pb-5 min-[761px]:min-h-screen min-[761px]:px-[clamp(30px,6.5vw,96px)] min-[761px]:py-5">
-            <div class="doctor-login-enter my-auto w-full max-w-[540px] py-7 pb-6 max-[420px]:pt-6 min-[761px]:py-[10px]">
-                <p class="mb-1.5 text-[11.3px] font-bold uppercase tracking-[0.035em] text-[#347cf0]">Login Dokter</p>
-                <h2 class="text-[30px] font-bold leading-[1.2] tracking-[-0.045em] text-[#263b59] min-[761px]:text-[clamp(30px,2.3vw,37.5px)]">Masuk ke ClinicOne</h2>
-                <p class="doctor-login-intro mb-[17px] mt-[7px] text-[13.8px] leading-[1.5] text-[#7c8da7]">Masuk dengan kode akses untuk mengelola layanan klinik.</p>
+        <section class="flex min-h-0 flex-col justify-center bg-[#f3f7fd] px-[clamp(22px,6vw,40px)] py-8 min-[761px]:min-h-screen min-[761px]:px-8 min-[761px]:py-10">
+            <div class="doctor-login-enter my-auto w-full max-w-[360px] self-center rounded-xl border border-[#edf1f6] bg-white px-7 py-7 shadow-[0_12px_36px_rgba(35,66,112,0.07)] sm:px-[30px] sm:py-[30px]">
+                <span class="mb-5 flex size-10 items-center justify-center rounded-lg bg-[#edf4ff] text-[#347cf0]" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="4" y="10" width="16" height="11" rx="2" />
+                        <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                        <circle cx="12" cy="15" r="1" />
+                    </svg>
+                </span>
+                <h2 class="text-[24px] font-bold leading-[1.2] tracking-[-0.035em] text-[#263b59]">Login Dokter</h2>
+                <p class="doctor-login-intro mb-6 mt-2 text-[12px] leading-[1.5] text-[#7c8da7]">Masuk untuk mengelola layanan klinik.</p>
 
                 <form method="POST" action="{{ route('dokter.login.submit') }}" class="doctor-login-form grid gap-[10px]" data-doctor-login-form novalidate>
                     @csrf
                     <div class="doctor-login-field grid gap-[5px]">
-                        <label for="access-code" class="text-[11.3px] font-semibold text-[#334763]">Kode Akses</label>
-                        <div class="doctor-login-input-wrap flex h-[35px] items-center rounded-[6px] border border-[#e2e9f2] bg-white px-[10px] transition focus-within:border-[#347cf0] focus-within:ring-[3px] focus-within:ring-[#347cf0]/[0.11] {{ isset($errors) && $errors->has('access_code') ? 'border-red-300 ring-[3px] ring-red-100' : '' }}">
+                        <label for="access-code" class="text-[11px] font-semibold text-[#334763]">Kode Akses</label>
+                        <div class="doctor-login-input-wrap flex h-10 items-center rounded-md border border-[#e2e9f2] bg-white px-3 transition focus-within:border-[#347cf0] focus-within:ring-[3px] focus-within:ring-[#347cf0]/[0.11] {{ isset($errors) && $errors->has('access_code') ? 'border-red-300 ring-[3px] ring-red-100' : '' }}">
                             <svg class="mr-2 size-[15px] shrink-0 text-[#70839e]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                 <rect x="3.5" y="10" width="17" height="10" rx="2" />
                                 <path d="M7 10V7a5 5 0 0 1 10 0v3" />
@@ -58,7 +64,7 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="doctor-login-submit mt-[-1px] flex min-h-[36px] w-full items-center justify-center rounded-[6px] bg-[#347cf0] text-[12.5px] font-semibold text-white shadow-sm transition hover:bg-[#286de0] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#347cf0] active:translate-y-px">Masuk sebagai dokter</button>
+                    <button type="submit" class="doctor-login-submit mt-1 flex min-h-[38px] w-full items-center justify-center rounded-md bg-[#347cf0] text-[12px] font-semibold text-white shadow-sm transition hover:bg-[#286de0] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#347cf0] active:translate-y-px">Masuk</button>
                     @if (isset($errors) && $errors->has('access_code'))
                         <p id="doctor-login-feedback" class="rounded-md bg-red-50 px-3 py-2 text-[12px] leading-relaxed text-red-700" role="alert" aria-live="polite">
                             {{ $errors->first('access_code') }}
@@ -68,7 +74,7 @@
                     @endif
                 </form>
 
-                <button type="button" data-forgot-access-code class="mt-3 block text-[12px] font-medium text-[#347cf0] transition hover:text-[#245fb0] focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#347cf0]">Lupa kode akses?</button>
+                <button type="button" data-forgot-access-code class="mx-auto mt-3 block text-[11px] font-medium text-[#347cf0] transition hover:text-[#245fb0] focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#347cf0]">Lupa kode akses?</button>
 
                 <div class="doctor-login-privacy mt-5 flex items-start gap-[9px] border-t border-[#edf1f6] pt-3 text-[11.3px] leading-[1.6] text-[#8090a8]">
                     <svg viewBox="0 0 24 24" class="mt-px size-[15px] shrink-0 text-[#70839e]" fill="none" aria-hidden="true">
