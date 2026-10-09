@@ -1,9 +1,17 @@
 <?php
 
+use App\Http\Controllers\DoctorAccessController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
+Route::middleware('web')->group(function () {
+    Route::get('/', [DoctorAccessController::class, 'showLoginForm'])->name('home');
+    Route::get('/dokter', [DoctorAccessController::class, 'showLoginForm'])->name('dokter.login');
+    Route::post('/dokter/login', [DoctorAccessController::class, 'login'])->name('dokter.login.submit');
+    Route::get('/dokter/dashboard', [DoctorAccessController::class, 'dashboard'])->name('dokter.dashboard');
+    Route::get('/dokter/janji', [DoctorAccessController::class, 'kelolaJanji'])->name('dokter.janji');
+    Route::get('/dokter/jadwal', [DoctorAccessController::class, 'pengaturanJadwal'])->name('dokter.jadwal');
+    Route::get('/dokter/profil', [DoctorAccessController::class, 'profilDokter'])->name('dokter.profil');
+    Route::post('/dokter/logout', [DoctorAccessController::class, 'logout'])->name('dokter.logout');
 });
 
 Route::prefix('pasien')->name('pasien.')->group(function () {
