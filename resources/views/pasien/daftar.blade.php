@@ -304,6 +304,14 @@
             font-size: 11.3px;
         }
 
+        .password-hint[data-strength="weak"] {
+            color: #d14343;
+        }
+
+        .password-hint[data-strength="strong"] {
+            color: #2eaa83;
+        }
+
         .password-hint svg {
             width: 12px;
             height: 12px;
@@ -707,16 +715,16 @@
                         </div>
                     </div>
 
-                    <p class="password-hint">
+                    <p class="password-hint" id="password-strength-hint" data-strength="weak" role="status" aria-live="polite">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <circle cx="12" cy="12" r="9"/>
                             <path d="m8.5 12 2.3 2.3 4.8-5"/>
                         </svg>
-                        Kata sandi kuat &bull; Minimal 8 karakter, huruf dan angka
+                        <span id="password-strength-text">Kata sandi belum kuat &bull; Minimal 8 karakter, huruf dan angka</span>
                     </p>
 
                     <label class="terms-option" for="terms">
-                        <input id="terms" name="terms" type="checkbox" value="1" required>
+                        <input id="terms" name="terms" type="checkbox" value="1" required {{ old('terms') ? 'checked' : '' }}>
                         <span>Saya menyetujui <a href="#">Syarat &amp; Ketentuan</a> serta <a href="#">Kebijakan Privasi</a> ClinicOne untuk pengelolaan data pasien.</span>
                     </label>
                     @error('terms')
@@ -728,9 +736,13 @@
                         Daftar akun
                     </button>
 
-                    @if ($errors->any() || session('registration_error'))
+                    @if ($errors->any())
                         <p class="registration-alert" role="alert">
                             Data tidak valid atau tidak lengkap, mohon isi dengan benar.
+                        </p>
+                    @elseif (session('registration_error'))
+                        <p class="registration-alert" role="alert">
+                            {{ session('registration_error') }}
                         </p>
                     @endif
                 </form>
@@ -774,6 +786,31 @@
                 toggle.setAttribute('aria-label', isPasswordHidden ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi');
             });
         });
+
+        const passwordInput = document.getElementById('password');
+        const passwordStrengthHint = document.getElementById('password-strength-hint');
+        const passwordStrengthText = document.getElementById('password-strength-text');
+
+        if (
+            passwordInput instanceof HTMLInputElement
+            && passwordStrengthHint instanceof HTMLParagraphElement
+            && passwordStrengthText instanceof HTMLSpanElement
+        ) {
+            const updatePasswordStrength = () => {
+                const password = passwordInput.value;
+                const isStrong = [...password].length >= 8
+                    && /\p{L}/u.test(password)
+                    && /\p{N}/u.test(password);
+
+                passwordStrengthHint.dataset.strength = isStrong ? 'strong' : 'weak';
+                passwordStrengthText.textContent = isStrong
+                    ? 'Kata sandi kuat • Minimal 8 karakter, huruf dan angka'
+                    : 'Kata sandi belum kuat • Minimal 8 karakter, huruf dan angka';
+            };
+
+            passwordInput.addEventListener('input', updatePasswordStrength);
+            updatePasswordStrength();
+        }
 
         const registrationSuccessDialog = document.getElementById('registration-success-dialog');
 

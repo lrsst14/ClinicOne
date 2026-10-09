@@ -31,8 +31,8 @@ class PatientRegistrationTest extends TestCase
             'phone' => '0812 3456 7890',
             'nik' => '3201011234567890',
             'email' => 'nadia@example.com',
-            'password' => 'ClinicOne123',
-            'password_confirmation' => 'ClinicOne123',
+            'password' => 'LARASati1405',
+            'password_confirmation' => 'LARASati1405',
             'terms' => '1',
         ]);
 
@@ -49,7 +49,7 @@ class PatientRegistrationTest extends TestCase
 
         $user = User::query()->where('email', 'nadia@example.com')->firstOrFail();
         $this->assertSame('2000-04-12', $user->birth_date->toDateString());
-        $this->assertTrue(Hash::check('ClinicOne123', $user->password));
+        $this->assertTrue(Hash::check('LARASati1405', $user->password));
 
         $this->get(route('pasien.daftar'))
             ->assertOk()
@@ -67,7 +67,8 @@ class PatientRegistrationTest extends TestCase
             ->post(route('pasien.register'), [])
             ->assertOk()
             ->assertSee('Nama lengkap wajib diisi.')
-            ->assertSee('Data tidak valid atau tidak lengkap, mohon isi dengan benar.');
+            ->assertSee('Data tidak valid atau tidak lengkap, mohon isi dengan benar.')
+            ->assertDontSee('Pendaftaran belum dapat diproses karena koneksi database bermasalah.');
 
         $this->assertDatabaseCount('users', 0);
     }
@@ -106,13 +107,14 @@ class PatientRegistrationTest extends TestCase
                 'terms' => '1',
             ])
             ->assertRedirect(route('pasien.daftar'))
-            ->assertSessionHas('registration_error', 'Data tidak valid atau tidak lengkap, mohon isi dengan benar.')
+            ->assertSessionHas('registration_error', 'Pendaftaran belum dapat diproses karena koneksi database bermasalah. Silakan coba lagi beberapa saat.')
             ->assertSessionMissing('_old_input.password')
             ->assertSessionMissing('_old_input.password_confirmation');
 
         $this->get(route('pasien.daftar'))
             ->assertOk()
-            ->assertSee('Data tidak valid atau tidak lengkap, mohon isi dengan benar.');
+            ->assertSee('Pendaftaran belum dapat diproses karena koneksi database bermasalah. Silakan coba lagi beberapa saat.')
+            ->assertDontSee('Data tidak valid atau tidak lengkap, mohon isi dengan benar.');
 
         $this->assertDatabaseCount('users', 0);
         Exceptions::assertReported(QueryException::class);
@@ -156,6 +158,10 @@ class PatientRegistrationTest extends TestCase
                 'email' => 'Alamat email sudah terdaftar.',
                 'nik' => 'NIK sudah terdaftar.',
             ]);
+
+        $this->get(route('pasien.daftar'))
+            ->assertOk()
+            ->assertSee('id="terms" name="terms" type="checkbox" value="1" required checked', false);
 
         $this->assertDatabaseCount('users', 1);
     }

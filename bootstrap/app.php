@@ -27,6 +27,6 @@ return Application::configure(basePath: dirname(__DIR__))
 
             return to_route('pasien.daftar')
                 ->withInput($request->except(['_token', 'password', 'password_confirmation']))
-                ->with('registration_error', 'Data tidak valid atau tidak lengkap, mohon isi dengan benar.');
+                ->with('registration_error', 'Pendaftaran belum dapat diproses karena koneksi database bermasalah. Silakan coba lagi beberapa saat.');
         });
     })->create();
