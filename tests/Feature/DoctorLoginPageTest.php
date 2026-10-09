@@ -28,6 +28,7 @@ class DoctorLoginPageTest extends TestCase
     public function test_doctor_can_login_with_valid_access_code(): void
     {
         $this->withoutVite();
+        config(['services.clinicone.doctor_access_code' => 'clinicone2026']);
 
         $response = $this->from('/dokter')->post('/dokter/login', ['access_code' => 'clinicone2026']);
 
@@ -38,8 +39,20 @@ class DoctorLoginPageTest extends TestCase
     public function test_doctor_cannot_login_with_invalid_access_code(): void
     {
         $this->withoutVite();
+        config(['services.clinicone.doctor_access_code' => 'clinicone2026']);
 
         $response = $this->from('/dokter')->post('/dokter/login', ['access_code' => 'salah']);
+
+        $response->assertRedirect('/dokter');
+        $response->assertSessionHasErrors(['access_code' => 'Kode akses tidak valid. Silakan cek kembali.']);
+    }
+
+    public function test_doctor_cannot_login_when_access_code_is_not_configured(): void
+    {
+        $this->withoutVite();
+        config(['services.clinicone.doctor_access_code' => null]);
+
+        $response = $this->from('/dokter')->post('/dokter/login', ['access_code' => 'clinicone2026']);
 
         $response->assertRedirect('/dokter');
         $response->assertSessionHasErrors(['access_code' => 'Kode akses tidak valid. Silakan cek kembali.']);

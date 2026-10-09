@@ -3,7 +3,8 @@ FROM node:22-alpine AS assets
 WORKDIR /app
 
 COPY package.json ./
-RUN npm install --ignore-scripts
+COPY package-lock.json ./
+RUN npm ci --ignore-scripts
 
 COPY . .
 RUN npm run build
@@ -34,4 +35,4 @@ USER www-data
 
 EXPOSE 8080
 
-CMD ["sh", "-c", "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"]
+CMD ["sh", "-c", "exec php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"]

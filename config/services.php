@@ -2,6 +2,10 @@
 
 return [
 
+    'clinicone' => [
+        'doctor_access_code' => env('DOCTOR_ACCESS_CODE'),
+    ],
+
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),
     ],

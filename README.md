@@ -25,13 +25,15 @@ Proyek ini memakai Dockerfile untuk membangun aset frontend dan menjalankan Lara
    DATABASE_URL=${{Postgres.DATABASE_URL}}
    ```
 
-4. Buat domain publik di **Settings > Networking**. Railway menjalankan `php artisan migrate --force` sebelum aplikasi dimulai, dan container mengulangi pemeriksaan migrasi sebelum server mulai melayani request. Migrasi perbaikan juga membuat tabel `sessions` bila migrasi awal pernah tercatat tanpa tabel tersebut; health check menggunakan endpoint `/up`.
+4. Buat domain publik di **Settings > Networking**. Railway menjalankan `php artisan migrate --force` sebelum aplikasi dimulai. Migrasi perbaikan juga membuat tabel `sessions` bila migrasi awal pernah tercatat tanpa tabel tersebut; health check menggunakan endpoint `/up`.
 
 Gunakan `LOG_CHANNEL=stderr` agar exception Laravel tampil di Deploy Logs Railway, bukan hanya tersimpan di file container.
 
+Atur `DOCTOR_ACCESS_CODE` sebagai variable rahasia di service aplikasi Railway. Aplikasi tidak menyediakan kode akses dokter default; login dokter ditolak sampai kode diatur.
+
 Konfigurasi juga mendukung variabel PostgreSQL `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`, dan `PGPASSWORD` sebagai fallback jika `DATABASE_URL` tidak diatur. Variabel dari service PostgreSQL harus direferensikan ke service aplikasi lewat **Add Reference** di Railway; variabel milik satu service tidak otomatis tersedia pada service lain. Pastikan keduanya ada dalam project dan environment yang sama agar private host dapat dijangkau.
 
-Untuk development lokal tanpa PostgreSQL, atur `DB_CONNECTION=sqlite` di file `.env` lokal. Jangan menaruh `APP_KEY` atau kredensial database di repository.
+Untuk development lokal tanpa PostgreSQL, atur `DB_CONNECTION=sqlite` di file `.env` lokal. Jangan menaruh `APP_KEY`, kode akses dokter, atau kredensial database di repository.
 
 ## About Laravel
 

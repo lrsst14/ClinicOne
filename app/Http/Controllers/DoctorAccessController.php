@@ -26,7 +26,7 @@ class DoctorAccessController extends Controller
             'access_code.min' => 'Kode akses minimal 4 karakter.',
         ]);
 
-        $expectedCode = config('services.clinicone.doctor_access_code', env('DOCTOR_ACCESS_CODE', 'clinicone2026'));
+        $expectedCode = config('services.clinicone.doctor_access_code');
 
         if (! is_string($expectedCode) || ! hash_equals($expectedCode, (string) $validated['access_code'])) {
             return back()
