@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Appointment;
 use App\Models\User;
+use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Tests\TestCase;
 
@@ -13,27 +14,32 @@ class DoctorDashboardTest extends TestCase
 
     public function test_doctor_dashboard_displays_database_backed_summary_and_todays_appointments(): void
     {
-        $this->travelTo(now()->setDate(2026, 10, 9)->setTime(7, 30));
+        $this->travelTo(CarbonImmutable::parse('2026-10-09 07:30:00', Appointment::TIMEZONE));
         $patient = User::factory()->create(['name' => 'Sinta Amelia']);
 
         Appointment::factory()->for($patient, 'patient')->create([
-            'scheduled_at' => now()->setTime(8, 0),
+            'appointment_date' => '2026-10-09',
+            'appointment_time' => '08:00',
             'status' => Appointment::STATUS_PENDING,
         ]);
         Appointment::factory()->for($patient, 'patient')->create([
-            'scheduled_at' => now()->setTime(8, 30),
+            'appointment_date' => '2026-10-09',
+            'appointment_time' => '08:30',
             'status' => Appointment::STATUS_CONFIRMED,
         ]);
         Appointment::factory()->for($patient, 'patient')->create([
-            'scheduled_at' => now()->setTime(9, 0),
+            'appointment_date' => '2026-10-09',
+            'appointment_time' => '09:00',
             'status' => Appointment::STATUS_COMPLETED,
         ]);
         Appointment::factory()->for($patient, 'patient')->create([
-            'scheduled_at' => now()->setTime(9, 30),
+            'appointment_date' => '2026-10-09',
+            'appointment_time' => '09:30',
             'status' => Appointment::STATUS_CANCELLED,
         ]);
         Appointment::factory()->for($patient, 'patient')->create([
-            'scheduled_at' => now()->addDay()->setTime(8, 0),
+            'appointment_date' => '2026-10-10',
+            'appointment_time' => '08:00',
             'status' => Appointment::STATUS_PENDING,
         ]);
 
@@ -60,7 +66,7 @@ class DoctorDashboardTest extends TestCase
 
     public function test_doctor_dashboard_shows_no_appointments_and_no_slots_when_clinic_is_closed(): void
     {
-        $this->travelTo(now()->setDate(2026, 10, 11)->setTime(7, 30));
+        $this->travelTo(CarbonImmutable::parse('2026-10-11 07:30:00', Appointment::TIMEZONE));
 
         $this->withoutVite()
             ->withSession(['doctor_authenticated' => true])

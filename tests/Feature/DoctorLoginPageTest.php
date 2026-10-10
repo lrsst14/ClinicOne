@@ -74,7 +74,7 @@ class DoctorLoginPageTest extends TestCase
             ->assertOk()
             ->assertSee('Kelola Janji')
             ->assertSee('Daftar Janji Pasien')
-            ->assertSee('data-appointment-details', false)
+            ->assertSee('data-appointment-modal', false)
             ->assertSee('appointment-detail-modal', false)
             ->assertSee('Detail Janji');
     }

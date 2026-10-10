@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\DoctorAccessController;
+use App\Http\Controllers\DoctorAppointmentController;
 use App\Http\Controllers\DoctorProfileController;
+use App\Http\Controllers\PatientAppointmentController;
 use App\Http\Controllers\PatientLoginController;
 use App\Http\Controllers\PatientRegistrationController;
 use App\Http\Controllers\RegistrationChartController;
@@ -15,7 +17,9 @@ Route::middleware('web')->group(function () {
         ->middleware('throttle:5,1')
         ->name('dokter.login.submit');
     Route::get('/dokter/dashboard', [DoctorAccessController::class, 'dashboard'])->name('dokter.dashboard');
-    Route::get('/dokter/janji', [DoctorAccessController::class, 'kelolaJanji'])->name('dokter.janji');
+    Route::get('/dokter/janji', [DoctorAppointmentController::class, 'index'])->name('dokter.janji');
+    Route::patch('/dokter/janji/{appointment}', [DoctorAppointmentController::class, 'update'])
+        ->name('dokter.janji.status');
     Route::get('/dokter/jadwal', [DoctorAccessController::class, 'pengaturanJadwal'])->name('dokter.jadwal');
     Route::get('/dokter/profil', [DoctorProfileController::class, 'show'])->name('dokter.profil');
     Route::post('/dokter/profil', [DoctorProfileController::class, 'update'])->name('dokter.profil.update');
@@ -34,7 +38,11 @@ Route::prefix('pasien')->name('pasien.')->group(function () {
 
     Route::middleware('auth')->group(function () {
         Route::view('/dashboard', 'pasien.dashboard')->name('dashboard');
-        Route::view('/pendaftaran', 'pasien.pendaftaran')->name('pendaftaran');
+        Route::get('/pendaftaran', [PatientAppointmentController::class, 'index'])->name('pendaftaran');
+        Route::post('/janji', [PatientAppointmentController::class, 'store'])
+            ->middleware('throttle:10,1')
+            ->name('janji.store');
+        Route::delete('/janji/{appointment}', [PatientAppointmentController::class, 'destroy'])->name('janji.cancel');
         Route::view('/jadwal-dokter', 'pasien.jadwal-dokter')->name('jadwal');
         Route::view('/riwayat', 'pasien.riwayat')->name('riwayat');
         Route::get('/profil-dokter', [DoctorProfileController::class, 'showForPatients'])->name('profil-dokter');

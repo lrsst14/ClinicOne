@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Appointment;
 use App\Models\DoctorProfile;
+use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -56,11 +57,11 @@ class DoctorAccessController extends Controller
             ]);
         }
 
-        $today = today();
+        $today = CarbonImmutable::today(Appointment::TIMEZONE);
         $appointments = Appointment::query()
             ->with('patient:id,name')
-            ->whereBetween('scheduled_at', [$today->copy()->startOfDay(), $today->copy()->endOfDay()])
-            ->orderBy('scheduled_at')
+            ->whereDate('appointment_date', $today->toDateString())
+            ->orderBy('appointment_time')
             ->orderBy('id')
             ->get();
 

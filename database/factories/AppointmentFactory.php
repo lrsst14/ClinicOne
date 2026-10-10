@@ -19,10 +19,11 @@ class AppointmentFactory extends Factory
     public function definition(): array
     {
         return [
-            'patient_id' => User::factory(),
-            'scheduled_at' => now()->addDay()->setTime(8, 0),
-            'status' => Appointment::STATUS_PENDING,
+            'user_id' => User::factory(),
+            'appointment_date' => now()->addWeek()->toDateString(),
+            'appointment_time' => '08:00',
             'complaint' => fake()->sentence(),
+            'status' => Appointment::STATUS_PENDING,
         ];
     }
 }
