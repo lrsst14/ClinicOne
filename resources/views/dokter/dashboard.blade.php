@@ -227,7 +227,7 @@
                                     $patientName = $appointment->patient?->name ?? 'Pasien tidak terdaftar';
                                 @endphp
                                 <tr class="hover:bg-slate-50 transition-colors">
-                                    <td class="px-4 py-4 font-semibold text-slate-800 sm:px-6">{{ $appointment->scheduled_at->format('H.i') }}</td>
+                                    <td class="px-4 py-4 font-semibold text-slate-800 sm:px-6">{{ substr($appointment->appointment_time, 0, 5) }}</td>
                                     <td class="px-4 py-4">
                                         <div class="flex items-center gap-3">
                                             <div class="h-8 w-8 rounded-full bg-sky-100 flex items-center justify-center text-xs font-bold text-sky-700 shrink-0">{{ mb_substr(mb_strtoupper($patientName), 0, 2) }}</div>

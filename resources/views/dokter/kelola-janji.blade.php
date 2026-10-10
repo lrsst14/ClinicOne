@@ -118,7 +118,7 @@
                         <div class="flex items-start justify-between gap-3">
                             <div>
                                 <p class="text-sm text-slate-500">Total Janji</p>
-                                <p class="mt-3 text-3xl font-bold text-slate-900">3</p>
+                                <p class="mt-3 text-3xl font-bold text-slate-900">{{ $stats['total'] }}</p>
                             </div>
                             <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#edf4ff] text-[#2a6df2]">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -126,14 +126,14 @@
                                 </svg>
                             </div>
                         </div>
-                        <p class="mt-3 text-xs text-slate-400">Kamis, 8 Oktober 2026</p>
+                        <p class="mt-3 text-xs text-slate-400">{{ now()->locale('id')->translatedFormat('l, j F Y') }}</p>
                     </div>
 
                     <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
                         <div class="flex items-start justify-between gap-3">
                             <div>
                                 <p class="text-sm text-slate-500">Menunggu Konfirmasi</p>
-                                <p class="mt-3 text-3xl font-bold text-slate-900">1</p>
+                                <p class="mt-3 text-3xl font-bold text-slate-900">{{ $stats['pending'] }}</p>
                             </div>
                             <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#fff8e7] text-[#f4b63f]">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -148,7 +148,7 @@
                         <div class="flex items-start justify-between gap-3">
                             <div>
                                 <p class="text-sm text-slate-500">Dikonfirmasi</p>
-                                <p class="mt-3 text-3xl font-bold text-slate-900">1</p>
+                                <p class="mt-3 text-3xl font-bold text-slate-900">{{ $stats['confirmed'] }}</p>
                             </div>
                             <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#edf7ff] text-[#2e8cff]">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -163,7 +163,7 @@
                         <div class="flex items-start justify-between gap-3">
                             <div>
                                 <p class="text-sm text-slate-500">Janji Selesai</p>
-                                <p class="mt-3 text-3xl font-bold text-slate-900">1</p>
+                                <p class="mt-3 text-3xl font-bold text-slate-900">{{ $stats['completed'] }}</p>
                             </div>
                             <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#eaf9f1] text-[#23b26d]">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -175,38 +175,38 @@
                     </div>
                 </div>
 
-                <div class="mt-5 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                <form method="GET" action="{{ route('dokter.janji') }}" class="mt-5 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
                     <div class="grid grid-cols-1 items-end gap-4 sm:grid-cols-2 xl:grid-cols-[1.2fr_1fr_1fr_auto]">
                         <div>
-                            <label class="mb-2 block text-sm font-medium text-slate-600">Cari pasien</label>
+                            <label for="appointment-search" class="mb-2 block text-sm font-medium text-slate-600">Cari pasien</label>
                             <div class="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
-                                <input type="text" placeholder="Cari nama pasien..." class="w-full border-0 bg-transparent text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none" />
+                                <input id="appointment-search" name="search" type="search" value="{{ $filters['search'] ?? '' }}" placeholder="Cari nama pasien..." class="w-full border-0 bg-transparent text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none" />
                             </div>
                         </div>
 
                         <div>
-                            <label class="mb-2 block text-sm font-medium text-slate-600">Tanggal janji</label>
+                            <label for="appointment-filter-date" class="mb-2 block text-sm font-medium text-slate-600">Tanggal janji</label>
                             <div class="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
-                                <select class="w-full appearance-none border-0 bg-transparent text-sm text-slate-700 focus:outline-none">
-                                    <option>08 Okt 2026</option>
-                                </select>
+                                <input id="appointment-filter-date" type="date" name="date" value="{{ $filters['date'] ?? '' }}" class="w-full border-0 bg-transparent text-sm text-slate-700 focus:outline-none" />
                             </div>
                         </div>
 
                         <div>
-                            <label class="mb-2 block text-sm font-medium text-slate-600">Status</label>
+                            <label for="appointment-filter-status" class="mb-2 block text-sm font-medium text-slate-600">Status</label>
                             <div class="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5">
-                                <select class="w-full appearance-none border-0 bg-transparent text-sm text-slate-700 focus:outline-none">
-                                    <option>Semua</option>
-                                    <option>Menunggu</option>
-                                    <option>Dikonfirmasi</option>
-                                    <option>Selesai</option>
+                                <select id="appointment-filter-status" name="status" class="w-full appearance-none border-0 bg-transparent text-sm text-slate-700 focus:outline-none">
+                                    <option value="all" @selected(($filters['status'] ?? 'all') === 'all')>Semua</option>
+                                    <option value="pending" @selected(($filters['status'] ?? '') === 'pending')>Menunggu</option>
+                                    <option value="confirmed" @selected(($filters['status'] ?? '') === 'confirmed')>Dikonfirmasi</option>
+                                    <option value="rejected" @selected(($filters['status'] ?? '') === 'rejected')>Ditolak</option>
+                                    <option value="completed" @selected(($filters['status'] ?? '') === 'completed')>Selesai</option>
+                                    <option value="cancelled" @selected(($filters['status'] ?? '') === 'cancelled')>Dibatalkan</option>
                                 </select>
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
@@ -214,13 +214,13 @@
                             </div>
                         </div>
 
-                        <button class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#2d6ef5] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#245fe3]">
+                        <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#2d6ef5] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#245fe3]">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-7.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                             </svg>
                             Filter
                         </button>
-                    </div>
+                    </form>
                 </div>
 
                 <div class="mt-5 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">

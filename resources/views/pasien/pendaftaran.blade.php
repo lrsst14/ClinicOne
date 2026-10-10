@@ -213,9 +213,9 @@
                 </button>
                 <nav class="breadcrumbs" aria-label="Breadcrumb"><span>Halaman pasien</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg><strong>Pendaftaran</strong></nav>
                 <div class="topbar-actions">
-                    <span class="topbar-date">{{ now()->locale('id')->translatedFormat('l, j F Y') }}</span>
+                    <span class="topbar-date">{{ \Carbon\CarbonImmutable::now(\App\Models\Appointment::TIMEZONE)->locale('id')->translatedFormat('l, j F Y') }}</span>
                     <span class="divider" aria-hidden="true"></span>
-                    <button class="user-menu" type="button" aria-label="Akun Nadia Putri"><span class="initials">NP</span><span><span class="user-name">Nadia Putri</span><span class="user-id">Pasien &bull; PS-00128</span></span><svg class="user-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>
+                    <button class="user-menu" type="button" aria-label="Akun {{ auth()->user()->name }}"><span class="initials">{{ mb_substr(auth()->user()->name, 0, 1) }}</span><span><span class="user-name">{{ auth()->user()->name }}</span><span class="user-id">Pasien</span></span><svg class="user-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>
                 </div>
             </header>
 
@@ -223,61 +223,118 @@
                 <section class="welcome-row" aria-label="Pendaftaran pemeriksaan">
                     <div class="welcome-heading"><h1>Pendaftaran pemeriksaan</h1><p>Lengkapi informasi kunjungan Anda dan kelola janji pemeriksaan dengan mudah.</p></div>
                 </section>
-                <section class="success" aria-label="Status pendaftaran">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/></svg>
-                    <div class="success-copy"><strong>Pendaftaran berhasil. Janji Anda sudah terkonfirmasi.</strong><span>Bukti pendaftaran dikirim ke nadia.putri@email.com. Anda dapat memperbarui keluhan di bawah ini.</span></div>
-                    <span class="booking-code">C-261009-012</span>
-                </section>
+                @if (session('appointment_success'))
+                    <section class="success" role="status">
+                        <div class="success-copy"><strong>{{ session('appointment_success') }}</strong></div>
+                    </section>
+                @endif
+
+                @if ($errors->any())
+                    <section class="success" role="alert">
+                        <div class="success-copy">
+                            @foreach ($errors->all() as $error)
+                                <span>{{ $error }}</span>
+                            @endforeach
+                        </div>
+                    </section>
+                @endif
 
                 <div class="columns">
-                    <section class="card" aria-labelledby="details-title">
-                        <h2 class="card-title" id="details-title">Detail pendaftaran</h2>
-                        <p class="card-description">Informasi pasien dan kunjungan yang telah Anda pilih.</p>
-                        <div class="section-label"><span>Data pasien</span><span class="badge">Pasien terdaftar</span></div>
-                        <div class="patient-grid">
-                            <div class="info"><label>Nama pasien</label><div class="value">Nadia Putri</div></div>
-                            <div class="info"><label>Nomor rekam medis</label><div class="value">PS-00128</div></div>
-                            <div class="info"><label>Nomor ponsel</label><div class="value">0812 3456 7890</div></div>
-                            <div class="info"><label>Tanggal lahir &bull; usia</label><div class="value">12 Mei 1998 &bull; 28 tahun</div></div>
-                        </div>
-                        <hr class="separator">
-                        <div class="section-label">Jadwal &amp; informasi pemeriksaan</div>
+                    <section class="card" aria-labelledby="booking-title">
+                        <h2 class="card-title" id="booking-title">Buat janji pemeriksaan</h2>
+                        <p class="card-description">Pilih tanggal dan slot yang tersedia. Janji akan menunggu konfirmasi dokter.</p>
+
                         <div class="doctor">
                             <img src="{{ asset('img/Doctor_portrait.png') }}" alt="Foto dr. Andi">
                             <span><span class="doctor-name">dr. Andi</span><span class="doctor-role">Dokter Umum</span></span>
-                            <span class="badge">Dokter Anda</span>
+                            <span class="badge">Pemeriksaan umum</span>
                         </div>
-                        <div class="visit-grid">
-                            <div class="info"><label>Tanggal pemeriksaan</label><div class="field"><span>Jumat, 9 Oktober 2026</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4m8-4v4M4 10h16"/></svg></div></div>
-                            <div class="info"><label>Waktu pemeriksaan</label><div class="field"><span>09.00–09.30 WIB</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div></div>
-                            <div class="info"><label>Jenis layanan</label><div class="value">Pemeriksaan umum</div></div>
-                            <div class="info"><label>Metode pembayaran</label><div class="value">Umum / pribadi</div></div>
-                            <div class="info full-width"><label for="complaint">Keluhan / tujuan kunjungan *</label><textarea class="field" id="complaint" name="complaint">Kontrol kesehatan setelah pemeriksaan 24 September. Kondisi sudah membaik, ingin berkonsultasi kembali.</textarea><p class="hint">Sampaikan keluhan agar dokter dapat mempersiapkan pemeriksaan.</p></div>
-                        </div>
-                        <div class="form-footer"><p class="form-note">Perubahan keluhan tidak mengubah jadwal Anda.</p><button class="primary-button" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>Simpan perubahan</button></div>
+
+                        <form method="GET" action="{{ route('pasien.pendaftaran') }}" class="info">
+                            <label for="appointment-date-filter">Tanggal pemeriksaan</label>
+                            <input class="field" id="appointment-date-filter" type="date" name="date" value="{{ $selectedDate }}" min="{{ $minimumDate }}" onchange="this.form.submit()">
+                        </form>
+
+                        <form method="POST" action="{{ route('pasien.janji.store') }}" class="mt-4">
+                            @csrf
+                            <input type="hidden" name="appointment_date" value="{{ $selectedDate }}">
+                            <div class="visit-grid">
+                                <div class="info">
+                                    <label for="appointment-time">Waktu pemeriksaan</label>
+                                    <select class="field" id="appointment-time" name="appointment_time" required @disabled($availableTimes === [])>
+                                        <option value="">Pilih waktu</option>
+                                        @foreach ($availableTimes as $time)
+                                            <option value="{{ $time }}" @selected(old('appointment_time') === $time)>{{ $time }}–{{ \Carbon\Carbon::createFromFormat('H:i', $time)->addMinutes(30)->format('H:i') }} WIB</option>
+                                        @endforeach
+                                    </select>
+                                    @error('appointment_time')
+                                        <p class="hint" role="alert">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                                <div class="info">
+                                    <label>Jenis layanan</label>
+                                    <div class="value">Pemeriksaan umum</div>
+                                </div>
+                                <div class="info full-width">
+                                    <label for="complaint">Keluhan / tujuan kunjungan</label>
+                                    <textarea class="field" id="complaint" name="complaint" maxlength="1000" required>{{ old('complaint') }}</textarea>
+                                    @error('complaint')
+                                        <p class="hint" role="alert">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+                            @if ($availableTimes === [])
+                                <p class="hint" role="status">Tidak ada slot yang tersedia untuk tanggal ini. Pilih tanggal lain.</p>
+                            @endif
+                            @error('appointment_date')
+                                <p class="hint" role="alert">{{ $message }}</p>
+                            @enderror
+                            <div class="form-footer">
+                                <p class="form-note">Jam praktik Senin–Kamis 08.00–12.00, Jumat 08.00–11.00.</p>
+                                <button class="primary-button" type="submit" @disabled($availableTimes === [])>Kirim permintaan</button>
+                            </div>
+                        </form>
                     </section>
 
                     <aside class="side-stack">
-                        <section class="card side-card" aria-labelledby="summary-title">
-                            <h2 class="card-title" id="summary-title">Ringkasan janji Anda</h2>
-                            <span class="badge success-badge">Terkonfirmasi</span>
-                            <div class="summary-list">
-                                <div class="summary-row"><span class="summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5H5a2 2 0 0 0-2 2v2a7 7 0 0 0 7 7h1a7 7 0 0 0 7-7V7a2 2 0 0 0-2-2h-3v5h5"/><path d="M11 16v1a4 4 0 0 0 4 4h2"/><circle cx="19" cy="21" r="1"/></svg></span><span><span class="summary-label">Dokter</span><span class="summary-value">dr. Andi &bull; Dokter Umum</span></span></div>
-                                <div class="summary-row"><span class="summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4m8-4v4M4 10h16"/></svg></span><span><span class="summary-label">Tanggal &amp; waktu</span><span class="summary-value">9 Oktober 2026 &bull; 09.00 WIB</span></span></div>
-                                <div class="summary-row"><span class="summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span><span class="summary-label">Lokasi pemeriksaan</span><span class="summary-value">ClinicOne &bull; Ruang 01</span></span></div>
-                            </div>
-                            <div class="queue"><span class="queue-label">NOMOR ANTREAN</span><span class="queue-number">A-012</span><span class="queue-code">Kode: C-261009-012</span></div>
-                            <div class="price"><span>Biaya konsultasi</span><strong>Rp100.000</strong></div>
-                            <p class="payment-note">Dibayar di klinik. Belum termasuk obat atau tindakan tambahan bila diperlukan.</p>
-                            <button class="download" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5"/><path d="M5 17v3h14v-3"/></svg>Unduh bukti pendaftaran</button>
-                        </section>
-                        <section class="card side-card" aria-labelledby="arrival-title">
-                            <h2 class="arrival-title" id="arrival-title">Sebelum datang</h2>
-                            <p class="arrival-copy">Hadir 15 menit lebih awal. Bawa identitas diri dan tunjukkan bukti pendaftaran kepada petugas.</p>
-                            <div class="arrival-actions"><a href="#ubah-jadwal">Ubah jadwal</a><a href="#batalkan-janji">Batalkan janji</a></div>
+                        <section class="card side-card">
+                            <h2 class="card-title">Informasi janji</h2>
+                            <p class="arrival-copy">Setiap slot berlangsung 30 menit. Janji baru berstatus menunggu sampai dokter mengonfirmasi.</p>
+                            <p class="arrival-copy">Hadir 15 menit lebih awal dan bawa identitas diri.</p>
                         </section>
                     </aside>
                 </div>
+
+                <section class="card mt-5" aria-labelledby="appointments-title">
+                    <h2 class="card-title" id="appointments-title">Janji saya</h2>
+                    <p class="card-description">Daftar janji dan status konfirmasi dokter.</p>
+                    @forelse ($appointments as $appointment)
+                        @php
+                            $statusLabels = [
+                                'pending' => 'Menunggu',
+                                'confirmed' => 'Dikonfirmasi',
+                                'rejected' => 'Ditolak',
+                                'completed' => 'Selesai',
+                                'cancelled' => 'Dibatalkan',
+                            ];
+                        @endphp
+                        <div class="section-label border-t border-slate-100 py-3">
+                            <span>{{ $appointment->appointment_date->locale('id')->translatedFormat('j F Y') }} · {{ substr($appointment->appointment_time, 0, 5) }} WIB</span>
+                            <span class="badge">{{ $statusLabels[$appointment->status] ?? $appointment->status }}</span>
+                        </div>
+                        <p class="card-description">{{ $appointment->complaint }}</p>
+                        @if (in_array($appointment->status, ['pending', 'confirmed'], true))
+                            <form method="POST" action="{{ route('pasien.janji.cancel', $appointment) }}" class="mb-3">
+                                @csrf
+                                @method('DELETE')
+                                <button class="outline-button" type="submit">Batalkan janji</button>
+                            </form>
+                        @endif
+                    @empty
+                        <p class="card-description">Anda belum memiliki janji pemeriksaan.</p>
+                    @endforelse
+                    {{ $appointments->links() }}
+                </section>
             </main>
 
         </div>
