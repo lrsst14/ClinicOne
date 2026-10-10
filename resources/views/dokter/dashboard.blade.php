@@ -109,7 +109,7 @@
                     <div class="flex items-start justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                         <div>
                             <p class="text-sm text-slate-500">Janji Hari Ini</p>
-                            <p class="mt-2 text-4xl font-bold text-slate-900">8</p>
+                            <p class="mt-2 text-4xl font-bold text-slate-900">{{ $appointmentCount }}</p>
                             <p class="mt-1 text-xs text-slate-400">Total janji terjadwal</p>
                         </div>
                         <div class="rounded-lg bg-blue-50 p-2 text-blue-500 shrink-0 mt-0.5">
@@ -122,7 +122,7 @@
                     <div class="flex items-start justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                         <div>
                             <p class="text-sm text-slate-500">Menunggu Konfirmasi</p>
-                            <p class="mt-2 text-4xl font-bold text-slate-900">3</p>
+                            <p class="mt-2 text-4xl font-bold text-slate-900">{{ $waitingAppointmentCount }}</p>
                             <p class="mt-1 text-xs text-slate-400">Perlu ditinjau</p>
                         </div>
                         <div class="rounded-lg bg-amber-50 p-2 text-amber-500 shrink-0 mt-0.5">
@@ -135,7 +135,7 @@
                     <div class="flex items-start justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                         <div>
                             <p class="text-sm text-slate-500">Janji Selesai</p>
-                            <p class="mt-2 text-4xl font-bold text-slate-900">5</p>
+                            <p class="mt-2 text-4xl font-bold text-slate-900">{{ $completedAppointmentCount }}</p>
                             <p class="mt-1 text-xs text-slate-400">Konsultasi selesai</p>
                         </div>
                         <div class="rounded-lg bg-sky-50 p-2 text-sky-500 shrink-0 mt-0.5">
@@ -148,7 +148,7 @@
                     <div class="flex items-start justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                         <div>
                             <p class="text-sm text-slate-500">Slot Tersedia</p>
-                            <p class="mt-2 text-4xl font-bold text-slate-900">4</p>
+                            <p class="mt-2 text-4xl font-bold text-slate-900">{{ $availableSlotCount }}</p>
                             <p class="mt-1 text-xs text-slate-400">Masih bisa dipesan</p>
                         </div>
                         <div class="rounded-lg bg-emerald-50 p-2 text-emerald-500 shrink-0 mt-0.5">
@@ -197,7 +197,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
-                            <span class="font-medium">Kamis, 9 Oktober 2026</span>
+                            <span class="font-medium">{{ $dashboardDate }}</span>
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                             </svg>
@@ -215,60 +215,40 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
-                            <tr class="hover:bg-slate-50 transition-colors">
-                                <td class="px-4 py-4 font-semibold text-slate-800 sm:px-6">08.00</td>
-                                <td class="px-4 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="h-8 w-8 rounded-full bg-sky-100 flex items-center justify-center text-xs font-bold text-sky-700 shrink-0">BS</div>
-                                        <span class="font-medium text-slate-800">Budi Santoso</span>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-4">
-                                    <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-xs font-semibold text-emerald-700">
-                                        <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-                                        Dikonfirmasi
-                                    </span>
-                                </td>
-                                <td class="px-4 py-4 text-right sm:px-6">
-                                    <button class="rounded-lg border border-slate-200 px-4 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors">Detail</button>
-                                </td>
-                            </tr>
-                            <tr class="hover:bg-slate-50 transition-colors">
-                                <td class="px-4 py-4 font-semibold text-slate-800 sm:px-6">08.30</td>
-                                <td class="px-4 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="h-8 w-8 rounded-full bg-violet-100 flex items-center justify-center text-xs font-bold text-violet-700 shrink-0">SA</div>
-                                        <span class="font-medium text-slate-800">Sinta Amelia</span>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-4">
-                                    <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 border border-amber-200 px-3 py-1 text-xs font-semibold text-amber-700">
-                                        <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
-                                        Menunggu
-                                    </span>
-                                </td>
-                                <td class="px-4 py-4 text-right sm:px-6">
-                                    <button class="rounded-lg border border-slate-200 px-4 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors">Detail</button>
-                                </td>
-                            </tr>
-                            <tr class="hover:bg-slate-50 transition-colors">
-                                <td class="px-4 py-4 font-semibold text-slate-800 sm:px-6">09.00</td>
-                                <td class="px-4 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="h-8 w-8 rounded-full bg-emerald-100 flex items-center justify-center text-xs font-bold text-emerald-700 shrink-0">RP</div>
-                                        <span class="font-medium text-slate-800">Rina Pratiwi</span>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-4">
-                                    <span class="inline-flex items-center gap-1.5 rounded-full bg-sky-50 border border-sky-200 px-3 py-1 text-xs font-semibold text-sky-700">
-                                        <span class="h-1.5 w-1.5 rounded-full bg-sky-500"></span>
-                                        Selesai
-                                    </span>
-                                </td>
-                                <td class="px-4 py-4 text-right sm:px-6">
-                                    <button class="rounded-lg border border-slate-200 px-4 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors">Detail</button>
-                                </td>
-                            </tr>
+                            @forelse ($appointments as $appointment)
+                                @php
+                                    [$statusLabel, $statusClasses] = match ($appointment->status) {
+                                        'pending' => ['Menunggu', 'bg-amber-50 border-amber-200 text-amber-700'],
+                                        'confirmed' => ['Dikonfirmasi', 'bg-emerald-50 border-emerald-200 text-emerald-700'],
+                                        'completed' => ['Selesai', 'bg-sky-50 border-sky-200 text-sky-700'],
+                                        'cancelled' => ['Dibatalkan', 'bg-slate-50 border-slate-200 text-slate-500'],
+                                        default => [$appointment->status, 'bg-slate-50 border-slate-200 text-slate-500'],
+                                    };
+                                    $patientName = $appointment->patient?->name ?? 'Pasien tidak terdaftar';
+                                @endphp
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="px-4 py-4 font-semibold text-slate-800 sm:px-6">{{ $appointment->scheduled_at->format('H.i') }}</td>
+                                    <td class="px-4 py-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="h-8 w-8 rounded-full bg-sky-100 flex items-center justify-center text-xs font-bold text-sky-700 shrink-0">{{ mb_substr(mb_strtoupper($patientName), 0, 2) }}</div>
+                                            <span class="font-medium text-slate-800">{{ $patientName }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-4">
+                                        <span class="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold {{ $statusClasses }}">
+                                            <span class="h-1.5 w-1.5 rounded-full bg-current"></span>
+                                            {{ $statusLabel }}
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-4 text-right sm:px-6">
+                                        <button type="button" class="rounded-lg border border-slate-200 px-4 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors">Detail</button>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="px-4 py-8 text-center text-sm text-slate-400 sm:px-6">Belum ada janji temu untuk hari ini.</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                     </div>

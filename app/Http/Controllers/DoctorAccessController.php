@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Appointment;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -47,7 +48,29 @@ class DoctorAccessController extends Controller
             ]);
         }
 
-        return view('dokter.dashboard');
+        $today = today();
+        $appointments = Appointment::query()
+            ->with('patient:id,name')
+            ->whereBetween('scheduled_at', [$today->copy()->startOfDay(), $today->copy()->endOfDay()])
+            ->orderBy('scheduled_at')
+            ->orderBy('id')
+            ->get();
+
+        $activeAppointments = $appointments->whereIn('status', Appointment::ACTIVE_STATUSES);
+        $dailySlotCapacity = match ($today->dayOfWeekIso) {
+            1, 2, 3, 4 => 8,
+            5 => 6,
+            default => 0,
+        };
+
+        return view('dokter.dashboard', [
+            'appointments' => $appointments,
+            'appointmentCount' => $activeAppointments->count(),
+            'waitingAppointmentCount' => $activeAppointments->where('status', Appointment::STATUS_PENDING)->count(),
+            'completedAppointmentCount' => $activeAppointments->where('status', Appointment::STATUS_COMPLETED)->count(),
+            'availableSlotCount' => max(0, $dailySlotCapacity - $activeAppointments->count()),
+            'dashboardDate' => $today->locale('id')->translatedFormat('l, j F Y'),
+        ]);
     }
 
     public function kelolaJanji(Request $request): View|RedirectResponse
