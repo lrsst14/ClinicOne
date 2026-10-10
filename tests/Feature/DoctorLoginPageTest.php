@@ -2,10 +2,13 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Tests\TestCase;
 
 class DoctorLoginPageTest extends TestCase
 {
+    use LazilyRefreshDatabase;
+
     public function test_home_links_to_doctor_login_and_login_route_shows_doctor_form(): void
     {
         $this->withoutVite();

@@ -208,18 +208,20 @@
             <main class="page-content">
                 <header class="page-heading">
                     <h1>Kenali dokter Anda</h1>
-                    <p>Perawatan yang personal bersama dr. Andi, dokter umum di ClinicOne.</p>
+                    <p>Informasi dokter yang melayani Anda di ClinicOne.</p>
                 </header>
 
                 <div class="profile-layout">
                     <div class="main-stack">
                         <section class="card profile-card" aria-labelledby="doctor-name">
-                            <img class="doctor-photo" src="{{ asset('img/Doctor_portrait.png') }}" alt="Foto dr. Andi, dokter umum">
+                            <img class="doctor-photo" src="{{ $profile?->photo_path ? route('dokter.profil.photo') : asset('img/Doctor_portrait.png') }}" alt="Foto profil dokter">
                             <div class="doctor-content">
                                 <span class="doctor-badge">Tenaga medis terdaftar</span>
-                                <h2 id="doctor-name">dr. Andi</h2>
-                                <p class="doctor-specialty">Dokter Umum</p>
-                                <p class="doctor-summary">Mendampingi kesehatan Anda dan keluarga dengan pemeriksaan yang teliti dan komunikasi yang hangat.</p>
+                                <h2 id="doctor-name">{{ trim(($profile?->title ? $profile->title.' ' : '').($profile?->full_name ?? 'Dokter ClinicOne')) }}</h2>
+                                <p class="doctor-specialty">{{ $profile?->specialization ?: 'Informasi spesialisasi belum tersedia.' }}</p>
+                                @if ($profile?->bio)
+                                    <p class="doctor-summary">{{ $profile->bio }}</p>
+                                @endif
                                 <div class="profile-facts">
                                     <div class="profile-fact"><span>Pengalaman</span><strong>8 tahun praktik</strong></div>
                                     <div class="profile-fact"><span>Bahasa</span><strong>Bahasa Indonesia</strong></div>
@@ -228,8 +230,8 @@
                         </section>
 
                         <section class="card" aria-labelledby="about-title">
-                            <h2 class="section-title" id="about-title">Tentang dr. Andi</h2>
-                            <p class="about-copy">dr. Andi adalah dokter umum yang berfokus pada pemeriksaan kesehatan, penanganan keluhan sehari-hari, serta pencegahan penyakit. Beliau percaya bahwa mendengarkan pasien dan memberikan penjelasan yang mudah dipahami adalah bagian penting dari perawatan yang baik.</p>
+                            <h2 class="section-title" id="about-title">Tentang {{ trim(($profile?->title ? $profile->title.' ' : '').($profile?->full_name ?? 'Dokter')) }}</h2>
+                            <p class="about-copy">{{ $profile?->bio ?: 'Informasi tentang dokter belum tersedia.' }}</p>
                             <hr class="divider">
                             <h3 class="service-label">Layanan pemeriksaan</h3>
                             <div class="service-tags">

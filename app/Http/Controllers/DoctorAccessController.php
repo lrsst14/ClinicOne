@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
+use App\Models\DoctorProfile;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
 class DoctorAccessController extends Controller
@@ -27,9 +29,15 @@ class DoctorAccessController extends Controller
             'access_code.min' => 'Kode akses minimal 4 karakter.',
         ]);
 
-        $expectedCode = config('services.clinicone.doctor_access_code');
+        $doctorProfile = DoctorProfile::query()->first();
+        $accessCodeHash = $doctorProfile?->access_code_hash;
 
-        if (! is_string($expectedCode) || ! hash_equals($expectedCode, (string) $validated['access_code'])) {
+        $isValidAccessCode = is_string($accessCodeHash)
+            ? Hash::check($validated['access_code'], $accessCodeHash)
+            : is_string(config('services.clinicone.doctor_access_code'))
+                && hash_equals(config('services.clinicone.doctor_access_code'), $validated['access_code']);
+
+        if (! $isValidAccessCode) {
             return back()
                 ->withErrors(['access_code' => 'Kode akses tidak valid. Silakan cek kembali.'])
                 ->withInput();
@@ -93,17 +101,6 @@ class DoctorAccessController extends Controller
         }
 
         return view('dokter.pengaturan-jadwal');
-    }
-
-    public function profilDokter(Request $request): View|RedirectResponse
-    {
-        if (! $request->session()->get('doctor_authenticated')) {
-            return redirect()->route('dokter.login')->withErrors([
-                'access_code' => 'Silakan masuk terlebih dahulu.',
-            ]);
-        }
-
-        return view('dokter.profil');
     }
 
     public function logout(Request $request): RedirectResponse

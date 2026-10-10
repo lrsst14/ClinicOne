@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DoctorAccessController;
+use App\Http\Controllers\DoctorProfileController;
 use App\Http\Controllers\PatientLoginController;
 use App\Http\Controllers\PatientRegistrationController;
 use App\Http\Controllers\RegistrationChartController;
@@ -10,11 +11,16 @@ Route::middleware('web')->group(function () {
     Route::view('/', 'welcome')->name('home');
     Route::get('/dokter/login', [DoctorAccessController::class, 'showLoginForm'])->name('dokter.login');
     Route::redirect('/dokter', '/dokter/login')->name('dokter.legacy-login');
-    Route::post('/dokter/login', [DoctorAccessController::class, 'login'])->name('dokter.login.submit');
+    Route::post('/dokter/login', [DoctorAccessController::class, 'login'])
+        ->middleware('throttle:5,1')
+        ->name('dokter.login.submit');
     Route::get('/dokter/dashboard', [DoctorAccessController::class, 'dashboard'])->name('dokter.dashboard');
     Route::get('/dokter/janji', [DoctorAccessController::class, 'kelolaJanji'])->name('dokter.janji');
     Route::get('/dokter/jadwal', [DoctorAccessController::class, 'pengaturanJadwal'])->name('dokter.jadwal');
-    Route::get('/dokter/profil', [DoctorAccessController::class, 'profilDokter'])->name('dokter.profil');
+    Route::get('/dokter/profil', [DoctorProfileController::class, 'show'])->name('dokter.profil');
+    Route::post('/dokter/profil', [DoctorProfileController::class, 'update'])->name('dokter.profil.update');
+    Route::post('/dokter/profil/kode-akses', [DoctorProfileController::class, 'updateAccessCode'])->name('dokter.profil.access-code');
+    Route::get('/dokter/profil/foto', [DoctorProfileController::class, 'photo'])->name('dokter.profil.photo');
     Route::post('/dokter/logout', [DoctorAccessController::class, 'logout'])->name('dokter.logout');
 });
 
@@ -31,7 +37,7 @@ Route::prefix('pasien')->name('pasien.')->group(function () {
         Route::view('/pendaftaran', 'pasien.pendaftaran')->name('pendaftaran');
         Route::view('/jadwal-dokter', 'pasien.jadwal-dokter')->name('jadwal');
         Route::view('/riwayat', 'pasien.riwayat')->name('riwayat');
-        Route::view('/profil-dokter', 'pasien.profil-dokter')->name('profil-dokter');
+        Route::get('/profil-dokter', [DoctorProfileController::class, 'showForPatients'])->name('profil-dokter');
         Route::post('/logout', [PatientLoginController::class, 'logout'])->name('logout');
     });
 });

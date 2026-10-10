@@ -91,10 +91,10 @@
                     <p class="whitespace-nowrap text-[10px] text-slate-500 sm:hidden">{{ now()->format('d/m/Y') }}</p>
                     <p class="hidden whitespace-nowrap text-xs text-slate-500 sm:block">{{ now()->locale('id')->translatedFormat('l, j F Y') }}</p>
                     <div class="flex items-center gap-2.5 rounded-full border border-slate-200 bg-white px-2 py-1.5 shadow-sm">
-                        <img src="{{ asset('img/Doctor_portrait.png') }}" alt="" class="size-9 rounded-full object-cover">
+                        <img src="{{ $profile->photo_path ? route('dokter.profil.photo') : asset('img/Doctor_portrait.png') }}" alt="" class="size-9 rounded-full object-cover">
                         <div class="mr-1 leading-tight">
-                            <p class="text-sm font-semibold text-slate-800">dr. Andi</p>
-                            <p class="text-[11px] text-slate-400">Dokter Umum</p>
+                            <p class="text-sm font-semibold text-slate-800">{{ trim(($profile->title ? $profile->title.' ' : '').($profile->full_name ?? 'Dokter')) }}</p>
+                            <p class="text-[11px] text-slate-400">{{ $profile->specialization ?: 'Spesialisasi belum diatur' }}</p>
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
@@ -103,23 +103,42 @@
                 </div>
             </header>
 
+            @if (session('profile_updated'))
+                <div role="status" class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{{ session('profile_updated') }}</div>
+            @endif
+            @if (session('access_code_updated'))
+                <div role="status" class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{{ session('access_code_updated') }}</div>
+            @endif
+            @if ($errors->any())
+                <div role="alert" class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    <p class="font-semibold">Periksa kembali data yang diisi.</p>
+                    <ul class="mt-1 list-inside list-disc">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <form method="POST" action="{{ route('dokter.profil.update') }}" enctype="multipart/form-data">
+                @csrf
             <section class="mb-5 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:gap-5 sm:p-5">
                 <div class="flex items-center gap-4">
-                    <img src="{{ asset('img/Doctor_portrait.png') }}" alt="Foto dr. Andi Pratama" class="size-[72px] rounded-full object-cover sm:size-[80px]">
+                    <img src="{{ $profile->photo_path ? route('dokter.profil.photo') : asset('img/Doctor_portrait.png') }}" alt="Foto profil dokter" class="size-[72px] rounded-full object-cover sm:size-[80px]">
                     <div>
                         <div class="flex flex-wrap items-center gap-3">
-                            <h2 class="text-xl font-bold text-slate-800">dr. Andi Pratama</h2>
+                            <h2 class="text-xl font-bold text-slate-800">{{ trim(($profile->title ? $profile->title.' ' : '').($profile->full_name ?? 'Nama dokter belum diatur')) }}</h2>
                             <span class="inline-flex items-center gap-1.5 rounded-full bg-[#eaf9f1] px-2.5 py-1 text-xs font-semibold text-[#249d66]">
                                 <span class="h-1.5 w-1.5 rounded-full bg-[#27ad72]"></span>
                                 Praktik Aktif
                             </span>
                         </div>
-                        <p class="mt-1 text-sm text-slate-600">Dokter Umum</p>
+                        <p class="mt-1 text-sm text-slate-600">{{ $profile->specialization ?: 'Spesialisasi belum diatur' }}</p>
                         <p class="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M5 21V7l8-4v18m6 0V11l-6-4M9 9v.01M9 12v.01M9 15v.01M9 18v.01" />
                             </svg>
-                            TemuDok — Klinik Umum
+                            ClinicOne — Klinik Umum
                         </p>
                     </div>
                 </div>
@@ -131,7 +150,7 @@
                         </svg>
                         Ubah Foto
                     </label>
-                    <input id="doctor-photo" type="file" accept="image/jpeg,image/png" class="sr-only">
+                    <input id="doctor-photo" name="photo" type="file" accept="image/jpeg,image/png" class="sr-only">
                     <p class="text-[11px] text-slate-400">JPG atau PNG, maks. 2 MB</p>
                 </div>
             </section>
@@ -141,45 +160,56 @@
                 <div class="grid grid-cols-1 gap-x-4 gap-y-3 md:grid-cols-2">
                     <label class="block text-xs font-medium text-slate-600">
                         Nama Lengkap
-                        <input type="text" value="Andi Pratama" class="mt-1.5 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
+                        <input type="text" name="full_name" value="{{ old('full_name', $profile->full_name) }}" required maxlength="255" autocomplete="name" class="mt-1.5 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
                     </label>
                     <div class="grid grid-cols-[0.55fr_1.45fr] gap-3">
                         <label class="block text-xs font-medium text-slate-600">
                             Gelar
-                            <input type="text" value="dr." class="mt-1.5 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
+                            <input type="text" name="title" value="{{ old('title', $profile->title) }}" maxlength="30" class="mt-1.5 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
                         </label>
                         <label class="block text-xs font-medium text-slate-600">
                             Spesialisasi
-                            <input type="text" value="Dokter Umum" class="mt-1.5 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
+                            <input type="text" name="specialization" value="{{ old('specialization', $profile->specialization) }}" required maxlength="255" class="mt-1.5 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
                         </label>
                     </div>
                     <label class="block text-xs font-medium text-slate-600">
                         No. STR
-                        <input type="text" value="1234567890123456" class="mt-1.5 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
+                        <input type="text" name="str_number" value="{{ old('str_number', $profile->str_number) }}" maxlength="64" class="mt-1.5 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
                     </label>
                     <label class="block text-xs font-medium text-slate-600">
                         No. SIP
-                        <input type="text" value="001/SIP-DU/2026" class="mt-1.5 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
+                        <input type="text" name="sip_number" value="{{ old('sip_number', $profile->sip_number) }}" maxlength="100" class="mt-1.5 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
                     </label>
                     <label class="block text-xs font-medium text-slate-600">
                         No. Telepon
-                        <input type="tel" value="0812 3456 7890" class="mt-1.5 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
+                        <input type="tel" name="phone" value="{{ old('phone', $profile->phone) }}" maxlength="30" autocomplete="tel" class="mt-1.5 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
                     </label>
                     <label class="block text-xs font-medium text-slate-600">
                         Email
-                        <input type="email" value="andi.pratama@example.com" class="mt-1.5 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
+                        <input type="email" name="email" value="{{ old('email', $profile->email) }}" maxlength="255" autocomplete="email" class="mt-1.5 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
                     </label>
                 </div>
-                <p class="mt-3 text-[11px] text-slate-400">Nomor STR, SIP, dan kontak di atas merupakan data contoh fiktif.</p>
+                <p class="mt-3 text-[11px] text-slate-400">Gunakan informasi yang benar agar pasien dapat mengenali dokter.</p>
             </section>
 
             <section class="mb-5 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
                 <h2 class="mb-3 text-base font-bold text-slate-800">Tentang Dokter</h2>
                 <label class="block text-xs font-medium text-slate-600">
                     Deskripsi Singkat
-                    <textarea rows="2" class="mt-1.5 block w-full resize-y rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100">Dokter umum yang memberikan layanan konsultasi dan pemeriksaan kesehatan umum.</textarea>
+                    <textarea name="bio" rows="2" maxlength="2000" class="mt-1.5 block w-full resize-y rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100">{{ old('bio', $profile->bio) }}</textarea>
                 </label>
             </section>
+
+            <footer class="mb-5 flex flex-wrap items-center justify-between gap-4 pb-2">
+                <p class="flex items-center gap-2 text-xs text-slate-500">Perubahan profil berlaku setelah disimpan.</p>
+                <div class="flex items-center gap-2">
+                    <button type="reset" class="rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50">Batal</button>
+                    <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-[#2d6ef5] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#245fe3]">
+                        Simpan Perubahan
+                    </button>
+                </div>
+            </footer>
+            </form>
 
             <section class="mb-5 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
                 <div class="flex items-center gap-4">
@@ -191,32 +221,30 @@
                     </div>
                     <div>
                         <h2 class="font-bold text-slate-800">Keamanan Akun</h2>
-                        <p class="mt-1 text-xs text-slate-400">Email akun <span class="ml-2 font-medium text-slate-600">andi.pratama@example.com</span></p>
+                        <p class="mt-1 text-xs text-slate-400">Login menggunakan kode akses. Perubahan kode berlaku untuk login berikutnya.</p>
                     </div>
                 </div>
-                <button type="button" class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#2d6ef5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 7a3 3 0 11-5.83 1H3v4h3v3h3v-3h2.17A3 3 0 0015 7z" />
-                    </svg>
-                    Ubah Password
-                </button>
+                <form method="POST" action="{{ route('dokter.profil.access-code') }}" class="grid w-full grid-cols-1 gap-3 md:grid-cols-2">
+                    @csrf
+                    <label class="block text-xs font-medium text-slate-600">
+                        Kode Akses Saat Ini
+                        <input type="password" name="current_access_code" required minlength="4" autocomplete="current-password" class="mt-1.5 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
+                    </label>
+                    <label class="block text-xs font-medium text-slate-600">
+                        Kode Akses Baru
+                        <input type="password" name="new_access_code" required minlength="8" autocomplete="new-password" class="mt-1.5 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
+                    </label>
+                    <label class="block text-xs font-medium text-slate-600">
+                        Konfirmasi Kode Akses Baru
+                        <input type="password" name="new_access_code_confirmation" required minlength="8" autocomplete="new-password" class="mt-1.5 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
+                    </label>
+                    <div class="flex items-end">
+                        <button type="submit" class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                            Ubah Kode Akses
+                        </button>
+                    </div>
+                </form>
             </section>
-
-            <footer class="flex flex-col items-start justify-between gap-4 pb-2 sm:flex-row sm:items-center">
-                <p class="flex items-center gap-2 text-xs text-slate-500">
-                    <span class="flex h-4 w-4 items-center justify-center rounded-full border border-slate-400 text-[10px] font-semibold">i</span>
-                    Perubahan profil berlaku setelah disimpan.
-                </p>
-                <div class="flex items-center gap-2">
-                    <button type="button" class="rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50">Batal</button>
-                    <button type="button" class="inline-flex items-center gap-2 rounded-lg bg-[#2d6ef5] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#245fe3]">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 3" />
-                        </svg>
-                        Simpan Perubahan
-                    </button>
-                </div>
-            </footer>
         </main>
     </div>
 </body>
