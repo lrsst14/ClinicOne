@@ -58,14 +58,19 @@ class DoctorAccessController extends Controller
         }
 
         $today = CarbonImmutable::today(Appointment::TIMEZONE);
+        $todayAppointments = Appointment::query()
+            ->whereDate('appointment_date', $today->toDateString())
+            ->get(['id', 'status']);
         $appointments = Appointment::query()
             ->with('patient:id,name')
-            ->whereDate('appointment_date', $today->toDateString())
+            ->whereDate('appointment_date', '>=', $today->toDateString())
+            ->limit(10)
+            ->orderBy('appointment_date')
             ->orderBy('appointment_time')
             ->orderBy('id')
             ->get();
 
-        $activeAppointments = $appointments->whereIn('status', Appointment::ACTIVE_STATUSES);
+        $activeAppointments = $todayAppointments->whereIn('status', Appointment::ACTIVE_STATUSES);
         $dailySlotCapacity = match ($today->dayOfWeekIso) {
             1, 2, 3, 4 => 8,
             5 => 6,

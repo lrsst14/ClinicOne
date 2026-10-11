@@ -190,8 +190,8 @@
                 <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
                     <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
                         <div>
-                            <h2 class="text-base font-bold text-slate-900">Jadwal Hari Ini</h2>
-                            <p class="text-xs text-slate-400 mt-0.5">Kelola kunjungan dan ketersediaan waktu praktik.</p>
+                            <h2 class="text-base font-bold text-slate-900">Jadwal Mendatang</h2>
+                            <p class="text-xs text-slate-400 mt-0.5">10 janji terdekat, mulai hari ini.</p>
                         </div>
                         <div class="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm text-slate-600 cursor-pointer hover:bg-slate-100 transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -208,6 +208,7 @@
                     <table class="w-full min-w-[620px] text-sm">
                         <thead class="bg-slate-50 border-b border-slate-100">
                             <tr>
+                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 sm:px-6">Tanggal</th>
                                 <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 sm:px-6">Jam</th>
                                 <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Pasien</th>
                                 <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Status</th>
@@ -227,6 +228,7 @@
                                     $patientName = $appointment->patient?->name ?? 'Pasien tidak terdaftar';
                                 @endphp
                                 <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="px-4 py-4 text-slate-600 sm:px-6">{{ $appointment->appointment_date->locale('id')->translatedFormat('j M Y') }}</td>
                                     <td class="px-4 py-4 font-semibold text-slate-800 sm:px-6">{{ substr($appointment->appointment_time, 0, 5) }}</td>
                                     <td class="px-4 py-4">
                                         <div class="flex items-center gap-3">
@@ -246,7 +248,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="px-4 py-8 text-center text-sm text-slate-400 sm:px-6">Belum ada janji temu untuk hari ini.</td>
+                                    <td colspan="5" class="px-4 py-8 text-center text-sm text-slate-400 sm:px-6">Belum ada janji temu mendatang.</td>
                                 </tr>
                             @endforelse
                         </tbody>
