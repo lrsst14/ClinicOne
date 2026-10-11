@@ -55,10 +55,12 @@
             <div>
                 <div class="mb-4 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
                     <div class="mb-0.5 flex items-center gap-2">
-                        <span class="h-2 w-2 shrink-0 rounded-full bg-emerald-500"></span>
-                        <p class="text-xs font-semibold text-slate-700">Klinik siap melayani</p>
+                        <span class="h-2 w-2 shrink-0 rounded-full {{ $clinicIsOpenToday ? 'bg-emerald-500' : 'bg-slate-400' }}"></span>
+                        <p class="text-xs font-semibold text-slate-700">{{ $clinicIsOpenToday ? 'Klinik siap melayani' : 'Klinik tutup hari ini' }}</p>
                     </div>
-                    <p class="pl-4 text-[11px] text-slate-400">Jam praktik 08.00 – 12.00</p>
+                    <p class="pl-4 text-[11px] text-slate-400">
+                        {{ $clinicTodaySchedule?->is_open ? 'Jam praktik '.substr($clinicTodaySchedule->start_time, 0, 5).' – '.substr($clinicTodaySchedule->end_time, 0, 5) : 'Tidak ada jadwal praktik hari ini' }}
+                    </p>
                 </div>
                 <form method="POST" action="{{ route('dokter.logout') }}">
                     @csrf
@@ -207,7 +209,7 @@
                                     <th scope="col" class="px-4 py-3 text-left text-xs font-semibold sm:px-5">Jam</th>
                                     <th scope="col" class="px-4 py-3 text-left text-xs font-semibold sm:px-5">Keluhan</th>
                                     <th scope="col" class="px-4 py-3 text-left text-xs font-semibold sm:px-5">Status</th>
-                                    <th scope="col" class="px-4 py-3 text-right text-xs font-semibold sm:px-5">Aksi</th>
+                                    <th scope="col" class="px-4 py-3 text-center text-xs font-semibold sm:px-5">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100">
@@ -248,8 +250,8 @@
                                                 {{ $statusLabel }}
                                             </span>
                                         </td>
-                                        <td class="px-4 py-4 sm:px-5">
-                                            <div class="flex min-w-max flex-wrap items-center justify-end gap-2">
+                                        <td class="px-4 py-4 text-center sm:px-5">
+                                            <div class="flex min-w-max flex-wrap items-center justify-center gap-2">
                                                 <button type="button"
                                                     data-appointment-details
                                                     data-name="{{ $patientName }}"
@@ -312,7 +314,11 @@
             <section role="dialog" aria-modal="true" aria-labelledby="appointment-detail-title" class="w-full max-w-lg rounded-2xl bg-white p-5 shadow-2xl">
                 <div class="mb-4 flex items-center justify-between">
                     <h2 id="appointment-detail-title" class="text-xl font-bold text-slate-900">Detail Janji</h2>
-                    <button type="button" data-close-appointment-modal aria-label="Tutup detail janji" class="rounded-lg px-3 py-2 text-slate-500 transition hover:bg-slate-100">Tutup</button>
+                    <button type="button" data-close-appointment-modal aria-label="Tutup detail janji" class="flex size-10 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        </svg>
+                    </button>
                 </div>
                 <dl class="grid grid-cols-2 gap-4 text-sm">
                     <div>

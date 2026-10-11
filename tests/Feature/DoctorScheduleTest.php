@@ -179,6 +179,20 @@ class DoctorScheduleTest extends TestCase
             ->assertViewHas('reservedSlotCount', 1);
     }
 
+    public function test_unchecked_weekly_day_shows_a_dash_instead_of_practice_hours(): void
+    {
+        $this->withoutVite()
+            ->withSession(['doctor_authenticated' => true])
+            ->get(route('dokter.jadwal'))
+            ->assertOk()
+            ->assertSee('data-schedule-practice-toggle', false)
+            ->assertSee('data-schedule-day-off', false)
+            ->assertSee('type="text" inputmode="numeric"', false)
+            ->assertSee('pattern="(?:[01][0-9]|2[0-3]):[0-5][0-9]"', false)
+            ->assertSee('placeholder="08:00"', false)
+            ->assertSee('—');
+    }
+
     /**
      * @param  array<int, array{is_open: string, start_time: string, end_time: string}>  $overrides
      * @return array{schedule: array<int, array{is_open: string, start_time: string, end_time: string}>}

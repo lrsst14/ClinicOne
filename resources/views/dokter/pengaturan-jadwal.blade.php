@@ -133,7 +133,7 @@
                     <div class="flex items-center gap-4">
                         <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-[#eef5ff] text-[#2c6efb]">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 5a7 7 0 00-7 7h14a7 7 0 00-7-7zm-7 7h14M12 5v14" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 3v5a6 6 0 0012 0V3M4 3h4m8 0h4m-8 11v2a4 4 0 004 4h1a3 3 0 100-6h-1" />
                             </svg>
                         </div>
                         <div>
@@ -187,11 +187,16 @@
                 </div>
 
                 <div class="overflow-x-auto">
-                    <table class="min-w-full text-left text-sm">
+                    <table class="min-w-full table-fixed text-left text-sm">
+                        <colgroup>
+                            <col class="w-[16%]">
+                            <col class="w-[68%]">
+                            <col class="w-[16%]">
+                        </colgroup>
                         <thead class="bg-slate-50 text-slate-500">
                             <tr>
                                 <th class="px-5 py-3 font-semibold">Hari</th>
-                                <th class="px-5 py-3 font-semibold">Jam Praktik</th>
+                                <th class="px-5 py-3 text-center font-semibold">Jam Praktik</th>
                                 <th class="px-5 py-3 font-semibold">Status</th>
                             </tr>
                         </thead>
@@ -199,22 +204,25 @@
                             @foreach ($days as $dayOfWeek => $dayName)
                                 @php
                                     $schedule = $weeklySchedules->get($dayOfWeek);
-                                    $isOpen = $schedule?->is_open === true;
+                                    $isOpen = filter_var(old("schedule.$dayOfWeek.is_open", $schedule?->is_open ?? false), FILTER_VALIDATE_BOOLEAN);
                                     $startTime = $schedule?->start_time ? substr($schedule->start_time, 0, 5) : '';
                                     $endTime = $schedule?->end_time ? substr($schedule->end_time, 0, 5) : '';
                                 @endphp
                                 <tr>
                                     <td class="px-5 py-4 font-medium text-slate-700">{{ $dayName }}</td>
                                     <td class="px-5 py-4">
-                                        <div class="flex flex-wrap items-center gap-2">
+                                        <div class="flex flex-wrap items-center justify-center gap-2">
                                             <input type="hidden" name="schedule[{{ $dayOfWeek }}][is_open]" value="0" form="weekly-schedule-form">
                                             <label class="inline-flex items-center gap-2 text-sm text-slate-600">
-                                                <input type="checkbox" name="schedule[{{ $dayOfWeek }}][is_open]" value="1" form="weekly-schedule-form" @checked(old("schedule.$dayOfWeek.is_open", $isOpen)) class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                                                <input type="checkbox" name="schedule[{{ $dayOfWeek }}][is_open]" value="1" form="weekly-schedule-form" data-schedule-practice-toggle @checked($isOpen) class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
                                                 Praktik
                                             </label>
-                                            <input type="time" name="schedule[{{ $dayOfWeek }}][start_time]" value="{{ old("schedule.$dayOfWeek.start_time", $startTime) }}" form="weekly-schedule-form" class="rounded-lg border border-slate-200 px-2 py-1.5 text-sm text-slate-700">
-                                            <span class="text-xs text-slate-400">s.d.</span>
-                                            <input type="time" name="schedule[{{ $dayOfWeek }}][end_time]" value="{{ old("schedule.$dayOfWeek.end_time", $endTime) }}" form="weekly-schedule-form" class="rounded-lg border border-slate-200 px-2 py-1.5 text-sm text-slate-700">
+                                            <div data-schedule-hours @unless ($isOpen) hidden @endunless class="flex flex-wrap items-center gap-2">
+                                                <input type="text" inputmode="numeric" pattern="(?:[01][0-9]|2[0-3]):[0-5][0-9]" placeholder="08:00" maxlength="5" aria-label="Jam mulai {{ $dayName }}" name="schedule[{{ $dayOfWeek }}][start_time]" value="{{ old("schedule.$dayOfWeek.start_time", $startTime) }}" form="weekly-schedule-form" class="w-24 rounded-lg border border-slate-200 px-2 py-1.5 text-sm text-slate-700">
+                                                <span class="text-xs text-slate-400">s.d.</span>
+                                                <input type="text" inputmode="numeric" pattern="(?:[01][0-9]|2[0-3]):[0-5][0-9]" placeholder="12:00" maxlength="5" aria-label="Jam selesai {{ $dayName }}" name="schedule[{{ $dayOfWeek }}][end_time]" value="{{ old("schedule.$dayOfWeek.end_time", $endTime) }}" form="weekly-schedule-form" class="w-24 rounded-lg border border-slate-200 px-2 py-1.5 text-sm text-slate-700">
+                                            </div>
+                                            <span data-schedule-day-off @if ($isOpen) hidden @endif class="text-sm text-slate-400">—</span>
                                         </div>
                                     </td>
                                     <td class="px-5 py-4">

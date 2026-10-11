@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use App\Models\Appointment;
 use App\Models\DoctorProfile;
+use App\Models\DoctorScheduleClosure;
+use App\Models\DoctorWeeklySchedule;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
@@ -135,6 +137,32 @@ class DoctorDashboardTest extends TestCase
             ->assertOk()
             ->assertViewHas('appointmentCount', 0)
             ->assertViewHas('availableSlotCount', 0)
-            ->assertSee('Belum ada janji temu mendatang.');
+            ->assertSee('Belum ada janji temu mendatang.')
+            ->assertSee('Klinik tutup hari ini')
+            ->assertSee('Tidak ada jadwal praktik hari ini')
+            ->assertDontSee('Klinik siap melayani');
+    }
+
+    public function test_doctor_dashboard_sidebar_shows_today_closure_and_saved_practice_hours(): void
+    {
+        $this->travelTo(CarbonImmutable::parse('2026-10-12 07:30:00', Appointment::TIMEZONE));
+        DoctorWeeklySchedule::query()
+            ->where('day_of_week', 1)
+            ->update([
+                'start_time' => '09:00',
+                'end_time' => '13:00',
+            ]);
+        DoctorScheduleClosure::query()->create([
+            'closed_on' => '2026-10-12',
+        ]);
+
+        $this->withoutVite()
+            ->withSession(['doctor_authenticated' => true])
+            ->get(route('dokter.dashboard'))
+            ->assertOk()
+            ->assertSee('Klinik tutup hari ini')
+            ->assertSee('Jam praktik 09:00 – 13:00')
+            ->assertDontSee('Klinik siap melayani')
+            ->assertDontSee('Jam praktik 08.00 – 12.00');
     }
 }

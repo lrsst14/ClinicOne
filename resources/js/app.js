@@ -160,6 +160,28 @@ const doctorSidebarOverlay = document.querySelector('[data-doctor-sidebar-overla
 const doctorSidebarMain = document.querySelector('[data-doctor-main]');
 const desktopSidebarQuery = window.matchMedia('(min-width: 768px)');
 
+document.querySelectorAll('[data-schedule-practice-toggle]').forEach((toggle) => {
+	if (!(toggle instanceof HTMLInputElement)) {
+		return;
+	}
+
+	const scheduleRow = toggle.closest('tr');
+	const practiceHours = scheduleRow?.querySelector('[data-schedule-hours]');
+	const dayOffPlaceholder = scheduleRow?.querySelector('[data-schedule-day-off]');
+
+	if (!(practiceHours instanceof HTMLElement) || !(dayOffPlaceholder instanceof HTMLElement)) {
+		return;
+	}
+
+	const updatePracticeHoursVisibility = () => {
+		practiceHours.hidden = !toggle.checked;
+		dayOffPlaceholder.hidden = toggle.checked;
+	};
+
+	toggle.addEventListener('change', updatePracticeHoursVisibility);
+	updatePracticeHoursVisibility();
+});
+
 const setDoctorSidebarOpen = (isOpen) => {
 	if (!doctorSidebar || !doctorSidebarToggle || !doctorSidebarOverlay || !doctorSidebarMain) {
 		return;

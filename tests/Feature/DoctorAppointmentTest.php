@@ -56,6 +56,8 @@ class DoctorAppointmentTest extends TestCase
             ->assertDontSee('Keluhan Budi.')
             ->assertSee('data-appointment-details', false)
             ->assertSee('appointment-detail-modal', false)
+            ->assertSee('aria-label="Tutup detail janji"', false)
+            ->assertSee('M6 18 18 6M6 6l12 12', false)
             ->assertSee('Detail Janji');
     }
 

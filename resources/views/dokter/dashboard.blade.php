@@ -55,10 +55,12 @@
             <div>
                 <div class="mb-4 rounded-lg bg-slate-50 border border-slate-200 px-3 py-2.5">
                     <div class="flex items-center gap-2 mb-0.5">
-                        <span class="h-2 w-2 rounded-full bg-emerald-500 shrink-0"></span>
-                        <p class="text-xs font-semibold text-slate-700">Klinik siap melayani</p>
+                        <span class="h-2 w-2 shrink-0 rounded-full {{ $clinicIsOpenToday ? 'bg-emerald-500' : 'bg-slate-400' }}"></span>
+                        <p class="text-xs font-semibold text-slate-700">{{ $clinicIsOpenToday ? 'Klinik siap melayani' : 'Klinik tutup hari ini' }}</p>
                     </div>
-                    <p class="text-[11px] text-slate-400 pl-4">Jam praktik 08.00 – 12.00</p>
+                    <p class="pl-4 text-[11px] text-slate-400">
+                        {{ $clinicTodaySchedule?->is_open ? 'Jam praktik '.substr($clinicTodaySchedule->start_time, 0, 5).' – '.substr($clinicTodaySchedule->end_time, 0, 5) : 'Tidak ada jadwal praktik hari ini' }}
+                    </p>
                 </div>
                 <form method="POST" action="{{ route('dokter.logout') }}">
                     @csrf

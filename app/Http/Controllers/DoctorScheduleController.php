@@ -65,6 +65,8 @@ class DoctorScheduleController extends Controller
             'today' => $today,
             'isOpenToday' => $isOpenToday,
             'isScheduledToday' => $todaySchedule?->is_open === true,
+            'clinicIsOpenToday' => $isOpenToday,
+            'clinicTodaySchedule' => $todaySchedule,
             'slotAvailability' => $slotAvailability,
             'availableSlotCount' => $isOpenToday
                 ? $slotAvailability->where('is_reserved', false)->where('is_expired', false)->count()
