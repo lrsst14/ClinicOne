@@ -59,10 +59,12 @@
             <div>
                 <div class="mb-4 rounded-xl border border-slate-200 bg-slate-50 px-3 py-3">
                     <div class="mb-1 flex items-center gap-2">
-                        <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
-                        <p class="text-[11px] font-semibold text-slate-700">Klinik siap melayani</p>
+                        <span class="h-2 w-2 rounded-full {{ $isOpenToday ? 'bg-emerald-500' : 'bg-slate-400' }}"></span>
+                        <p class="text-[11px] font-semibold text-slate-700">{{ $isOpenToday ? 'Klinik siap melayani' : 'Klinik tutup hari ini' }}</p>
                     </div>
-                    <p class="pl-4 text-[10px] text-slate-400">Jam praktik 08.00 – 12.00</p>
+                    <p class="pl-4 text-[10px] text-slate-400">
+                        {{ $todaySchedule?->is_open ? 'Jam praktik '.substr($todaySchedule->start_time, 0, 5).' – '.substr($todaySchedule->end_time, 0, 5) : 'Tidak ada jadwal praktik hari ini' }}
+                    </p>
                 </div>
 
                 <form method="POST" action="{{ route('dokter.logout') }}">
@@ -98,10 +100,10 @@
                     <p class="whitespace-nowrap text-[10px] text-slate-500 sm:hidden">{{ now()->format('d/m/Y') }}</p>
                     <p class="hidden whitespace-nowrap text-xs text-slate-500 sm:block">{{ now()->locale('id')->translatedFormat('l, j F Y') }}</p>
                     <div class="flex items-center gap-2.5 rounded-full border border-slate-200 bg-white px-2 py-1.5 shadow-sm">
-                        <img src="{{ asset('img/Doctor_portrait.png') }}" alt="" class="size-9 rounded-full object-cover">
+                        <img src="{{ $profile?->photo_path ? route('dokter.profil.photo') : asset('img/Doctor_portrait.png') }}" alt="" class="size-9 rounded-full object-cover">
                         <div class="mr-1 leading-tight">
-                            <p class="text-sm font-semibold text-slate-800">dr. Andi</p>
-                            <p class="text-[11px] text-slate-400">Dokter Umum</p>
+                            <p class="text-sm font-semibold text-slate-800">{{ $doctorDisplayName }}</p>
+                            <p class="text-[11px] text-slate-400">{{ $doctorSpecialization }}</p>
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
@@ -109,6 +111,22 @@
                     </div>
                 </div>
             </header>
+
+            @if (session('schedule_success'))
+                <div class="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800" role="status">
+                    {{ session('schedule_success') }}
+                </div>
+            @endif
+
+            @if ($errors->any())
+                <div class="mb-5 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800" role="alert">
+                    <ul class="list-inside list-disc space-y-1">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
             <section class="mb-5 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
                 <div class="flex flex-wrap items-center justify-between gap-4">
@@ -121,18 +139,35 @@
                         <div>
                             <div class="flex items-center gap-2">
                                 <span class="text-base font-bold text-slate-700">Status Praktik</span>
-                                <span class="inline-flex items-center gap-1.5 rounded-full bg-[#eaf9f1] px-2 py-1 text-base font-bold text-[#1da86b]">
-                                    <span class="h-2 w-2 rounded-full bg-[#2aa66d]"></span>
-                                    OPEN
+                                    <span class="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-base font-bold {{ $isOpenToday ? 'bg-[#eaf9f1] text-[#1da86b]' : 'bg-slate-100 text-slate-500' }}">
+                                        <span class="h-2 w-2 rounded-full {{ $isOpenToday ? 'bg-[#2aa66d]' : 'bg-slate-400' }}"></span>
+                                        {{ $isOpenToday ? 'OPEN' : 'CLOSED' }}
                                 </span>
                             </div>
-                            <p class="mt-1 text-sm text-slate-500">Dokter menerima janji untuk hari ini.</p>
+                                <p class="mt-1 text-sm text-slate-500">
+                                    {{ $isScheduledToday ? 'Jadwal mingguan: '.substr($weeklySchedules->get($today->dayOfWeekIso)->start_time, 0, 5).' – '.substr($weeklySchedules->get($today->dayOfWeekIso)->end_time, 0, 5) : 'Hari ini libur sesuai jadwal mingguan.' }}
+                                    @if (! $isOpenToday && $isScheduledToday)
+                                        Penerimaan janji ditutup untuk hari ini.
+                                    @endif
+                                </p>
                         </div>
                     </div>
 
                     <div class="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 p-1">
-                        <button type="button" class="rounded-lg bg-[#2d6ef5] px-4 py-2 text-sm font-semibold text-white shadow-sm">Open</button>
-                        <button class="rounded-lg px-4 py-2 text-sm font-medium text-slate-600">Close</button>
+                        @if ($isScheduledToday)
+                                <form method="POST" action="{{ route('dokter.jadwal.status') }}">
+                                    @csrf
+                                    <input type="hidden" name="status" value="open">
+                                    <button type="submit" @disabled($isOpenToday) class="rounded-lg px-4 py-2 text-sm font-semibold shadow-sm disabled:cursor-default {{ $isOpenToday ? 'bg-[#2d6ef5] text-white' : 'text-slate-600 hover:bg-white' }}">Open</button>
+                                </form>
+                                <form method="POST" action="{{ route('dokter.jadwal.status') }}">
+                                    @csrf
+                                    <input type="hidden" name="status" value="closed">
+                                    <button type="submit" @disabled(! $isOpenToday) class="rounded-lg px-4 py-2 text-sm font-medium disabled:cursor-default {{ ! $isOpenToday ? 'bg-white text-slate-700 shadow-sm' : 'text-slate-600 hover:bg-white' }}">Close</button>
+                                </form>
+                        @else
+                                <button type="button" disabled class="rounded-lg bg-slate-100 px-4 py-2 text-sm font-medium text-slate-400">Hari ini libur</button>
+                        @endif
                     </div>
                 </div>
             </section>
@@ -147,7 +182,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
-                        5 hari praktik
+                        {{ $practiceDayCount }} hari praktik
                     </span>
                 </div>
 
@@ -158,101 +193,87 @@
                                 <th class="px-5 py-3 font-semibold">Hari</th>
                                 <th class="px-5 py-3 font-semibold">Jam Praktik</th>
                                 <th class="px-5 py-3 font-semibold">Status</th>
-                                <th class="px-5 py-3 font-semibold text-right">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-200 bg-white">
-                            <tr>
-                                <td class="px-5 py-4 font-medium text-slate-700">Senin</td>
-                                <td class="px-5 py-4 text-slate-600"><span class="inline-flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>08.00 – 12.00</span></td>
-                                <td class="px-5 py-4"><span class="inline-flex items-center gap-1.5 rounded-full bg-[#eaf9f1] px-2.5 py-1 text-xs font-semibold text-[#2aa66d]"><span class="h-2 w-2 rounded-full bg-[#2aa66d]"></span>Aktif</span></td>
-                                <td class="px-5 py-4 text-right"><button class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">Edit</button></td>
-                            </tr>
-                            <tr>
-                                <td class="px-5 py-4 font-medium text-slate-700">Selasa</td>
-                                <td class="px-5 py-4 text-slate-600"><span class="inline-flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>08.00 – 12.00</span></td>
-                                <td class="px-5 py-4"><span class="inline-flex items-center gap-1.5 rounded-full bg-[#eaf9f1] px-2.5 py-1 text-xs font-semibold text-[#2aa66d]"><span class="h-2 w-2 rounded-full bg-[#2aa66d]"></span>Aktif</span></td>
-                                <td class="px-5 py-4 text-right"><button class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">Edit</button></td>
-                            </tr>
-                            <tr>
-                                <td class="px-5 py-4 font-medium text-slate-700">Rabu</td>
-                                <td class="px-5 py-4 text-slate-600"><span class="inline-flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>08.00 – 12.00</span></td>
-                                <td class="px-5 py-4"><span class="inline-flex items-center gap-1.5 rounded-full bg-[#eaf9f1] px-2.5 py-1 text-xs font-semibold text-[#2aa66d]"><span class="h-2 w-2 rounded-full bg-[#2aa66d]"></span>Aktif</span></td>
-                                <td class="px-5 py-4 text-right"><button class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">Edit</button></td>
-                            </tr>
-                            <tr>
-                                <td class="px-5 py-4 font-medium text-slate-700">Kamis</td>
-                                <td class="px-5 py-4 text-slate-600"><span class="inline-flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>08.00 – 12.00</span></td>
-                                <td class="px-5 py-4"><span class="inline-flex items-center gap-1.5 rounded-full bg-[#eaf9f1] px-2.5 py-1 text-xs font-semibold text-[#2aa66d]"><span class="h-2 w-2 rounded-full bg-[#2aa66d]"></span>Aktif</span></td>
-                                <td class="px-5 py-4 text-right"><button class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">Edit</button></td>
-                            </tr>
-                            <tr>
-                                <td class="px-5 py-4 font-medium text-slate-700">Jumat</td>
-                                <td class="px-5 py-4 text-slate-600"><span class="inline-flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>08.00 – 11.00</span></td>
-                                <td class="px-5 py-4"><span class="inline-flex items-center gap-1.5 rounded-full bg-[#eaf9f1] px-2.5 py-1 text-xs font-semibold text-[#2aa66d]"><span class="h-2 w-2 rounded-full bg-[#2aa66d]"></span>Aktif</span></td>
-                                <td class="px-5 py-4 text-right"><button class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">Edit</button></td>
-                            </tr>
-                            <tr>
-                                <td class="px-5 py-4 font-medium text-slate-700">Sabtu</td>
-                                <td class="px-5 py-4 text-slate-400">—</td>
-                                <td class="px-5 py-4"><span class="inline-flex items-center gap-1.5 rounded-full bg-[#eef4ff] px-2.5 py-1 text-xs font-semibold text-[#4e6cda]"><span class="h-2 w-2 rounded-full bg-[#4e6cda]"></span>Libur</span></td>
-                                <td class="px-5 py-4 text-right">—</td>
-                            </tr>
-                            <tr>
-                                <td class="px-5 py-4 font-medium text-slate-700">Minggu</td>
-                                <td class="px-5 py-4 text-slate-400">—</td>
-                                <td class="px-5 py-4"><span class="inline-flex items-center gap-1.5 rounded-full bg-[#eef4ff] px-2.5 py-1 text-xs font-semibold text-[#4e6cda]"><span class="h-2 w-2 rounded-full bg-[#4e6cda]"></span>Libur</span></td>
-                                <td class="px-5 py-4 text-right">—</td>
-                            </tr>
+                            @foreach ($days as $dayOfWeek => $dayName)
+                                @php
+                                    $schedule = $weeklySchedules->get($dayOfWeek);
+                                    $isOpen = $schedule?->is_open === true;
+                                    $startTime = $schedule?->start_time ? substr($schedule->start_time, 0, 5) : '';
+                                    $endTime = $schedule?->end_time ? substr($schedule->end_time, 0, 5) : '';
+                                @endphp
+                                <tr>
+                                    <td class="px-5 py-4 font-medium text-slate-700">{{ $dayName }}</td>
+                                    <td class="px-5 py-4">
+                                        <div class="flex flex-wrap items-center gap-2">
+                                            <input type="hidden" name="schedule[{{ $dayOfWeek }}][is_open]" value="0" form="weekly-schedule-form">
+                                            <label class="inline-flex items-center gap-2 text-sm text-slate-600">
+                                                <input type="checkbox" name="schedule[{{ $dayOfWeek }}][is_open]" value="1" form="weekly-schedule-form" @checked(old("schedule.$dayOfWeek.is_open", $isOpen)) class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                                                Praktik
+                                            </label>
+                                            <input type="time" name="schedule[{{ $dayOfWeek }}][start_time]" value="{{ old("schedule.$dayOfWeek.start_time", $startTime) }}" form="weekly-schedule-form" class="rounded-lg border border-slate-200 px-2 py-1.5 text-sm text-slate-700">
+                                            <span class="text-xs text-slate-400">s.d.</span>
+                                            <input type="time" name="schedule[{{ $dayOfWeek }}][end_time]" value="{{ old("schedule.$dayOfWeek.end_time", $endTime) }}" form="weekly-schedule-form" class="rounded-lg border border-slate-200 px-2 py-1.5 text-sm text-slate-700">
+                                        </div>
+                                    </td>
+                                    <td class="px-5 py-4">
+                                        <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold {{ $isOpen ? 'bg-[#eaf9f1] text-[#2aa66d]' : 'bg-[#eef4ff] text-[#4e6cda]' }}">
+                                            <span class="h-2 w-2 rounded-full {{ $isOpen ? 'bg-[#2aa66d]' : 'bg-[#4e6cda]' }}"></span>
+                                            {{ $isOpen ? 'Aktif' : 'Libur' }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
+                <div class="flex flex-col items-start justify-between gap-3 border-t border-slate-200 px-4 py-4 sm:flex-row sm:items-center sm:px-5">
+                    <p class="text-sm text-slate-500">Jadwal baru berlaku setelah disimpan. Perubahan yang berbenturan dengan janji aktif akan ditolak.</p>
+                    <button type="submit" form="weekly-schedule-form" class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#2d6ef5] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#245fe3]">
+                        Simpan Jadwal
+                    </button>
+                </div>
             </section>
+
+            <form id="weekly-schedule-form" method="POST" action="{{ route('dokter.jadwal.update') }}">
+                @csrf
+            </form>
 
             <section class="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                 <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
                     <div class="flex items-center gap-3">
                         <h3 class="text-[18px] font-bold text-slate-900">Ketersediaan Hari Ini</h3>
-                        <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">4 tersedia · 2 terisi</span>
+                        <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">{{ $availableSlotCount }} tersedia · {{ $reservedSlotCount }} terisi</span>
                     </div>
-                    <p class="text-sm text-slate-400">Kamis, 8 Oktober 2026</p>
+                    <p class="text-sm text-slate-400">{{ $today->locale('id')->translatedFormat('l, j F Y') }}</p>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
-                    <div class="rounded-xl border border-[#cfe9df] bg-[#eaf9f1] p-3 text-center">
-                        <p class="text-[13px] font-bold text-slate-800">08.00</p>
-                        <p class="mt-1 text-[11px] font-medium text-[#1da35a]">Tersedia</p>
+                @if ($slotAvailability->isEmpty())
+                    <p class="rounded-xl bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
+                        {{ $isOpenToday ? 'Tidak ada slot tersisa untuk hari ini.' : 'Tidak ada slot praktik yang dibuka hari ini.' }}
+                    </p>
+                @else
+                    <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
+                        @foreach ($slotAvailability as $slot)
+                            @php
+                                $slotIsAvailable = $isOpenToday && ! $slot['is_reserved'] && ! $slot['is_expired'];
+                                $slotClasses = $slot['is_reserved']
+                                    ? 'border-[#dfe7f4] bg-[#f3f7ff] text-[#4a6bb8]'
+                                    : ($slotIsAvailable ? 'border-[#cfe9df] bg-[#eaf9f1] text-[#1da35a]' : 'border-slate-200 bg-slate-50 text-slate-500');
+                            @endphp
+                            <div class="rounded-xl border p-3 text-center {{ $slotClasses }}">
+                                <p class="text-[13px] font-bold text-slate-800">{{ str_replace(':', '.', $slot['time']) }}</p>
+                                <p class="mt-1 text-[11px] font-medium">
+                                    {{ $slot['is_reserved'] ? 'Sudah ada janji' : ($slot['is_expired'] ? 'Sudah lewat' : ($slotIsAvailable ? 'Tersedia' : 'Ditutup')) }}
+                                </p>
+                            </div>
+                        @endforeach
                     </div>
-                    <div class="rounded-xl border border-[#cfe9df] bg-[#eaf9f1] p-3 text-center">
-                        <p class="text-[13px] font-bold text-slate-800">08.30</p>
-                        <p class="mt-1 text-[11px] font-medium text-[#1da35a]">Tersedia</p>
-                    </div>
-                    <div class="rounded-xl border border-[#dfe7f4] bg-[#f3f7ff] p-3 text-center">
-                        <p class="text-[13px] font-bold text-slate-800">09.00</p>
-                        <p class="mt-1 text-[11px] font-medium text-[#4a6bb8]">Sudah ada janji</p>
-                    </div>
-                    <div class="rounded-xl border border-[#cfe9df] bg-[#eaf9f1] p-3 text-center">
-                        <p class="text-[13px] font-bold text-slate-800">09.30</p>
-                        <p class="mt-1 text-[11px] font-medium text-[#1da35a]">Tersedia</p>
-                    </div>
-                    <div class="rounded-xl border border-[#dfe7f4] bg-[#f3f7ff] p-3 text-center">
-                        <p class="text-[13px] font-bold text-slate-800">10.00</p>
-                        <p class="mt-1 text-[11px] font-medium text-[#4a6bb8]">Sudah ada janji</p>
-                    </div>
-                    <div class="rounded-xl border border-[#cfe9df] bg-[#eaf9f1] p-3 text-center">
-                        <p class="text-[13px] font-bold text-slate-800">10.30</p>
-                        <p class="mt-1 text-[11px] font-medium text-[#1da35a]">Tersedia</p>
-                    </div>
-                </div>
+                @endif
 
                 <div class="mt-5 flex flex-col items-start justify-between gap-3 border-t border-slate-200 pt-4 sm:flex-row sm:items-center">
-                    <p class="text-sm text-slate-500">Perubahan jadwal berlaku setelah disimpan.</p>
-                    <button class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#2d6ef5] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#245fe3]">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 3" />
-                        </svg>
-                        Simpan Perubahan
-                    </button>
+                    <p class="text-sm text-slate-500">Menampilkan slot sesuai jadwal praktik dan janji pasien hari ini.</p>
                 </div>
             </section>
         </main>

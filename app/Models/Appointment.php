@@ -67,7 +67,20 @@ class Appointment extends Model
         $day = CarbonImmutable::parse($date, self::TIMEZONE)->startOfDay();
         $now = CarbonImmutable::now(self::TIMEZONE);
 
-        if ($day->isWeekend() || $day->lt($now->startOfDay())) {
+        if ($day->lt($now->startOfDay()) || self::isClosedOn($day)) {
+            return [];
+        }
+
+        $schedule = DB::table('doctor_weekly_schedules')
+            ->where('day_of_week', $day->dayOfWeekIso)
+            ->first(['is_open', 'start_time', 'end_time']);
+
+        if (
+            $schedule === null
+            || ! (bool) $schedule->is_open
+            || ! is_string($schedule->start_time)
+            || ! is_string($schedule->end_time)
+        ) {
             return [];
         }
 
@@ -77,7 +90,41 @@ class Appointment extends Model
             ->map(static fn (string $time): string => substr($time, 0, 5))
             ->all();
 
-        return self::timesForDay($day, $reservedTimes, $now);
+        return self::timesForDay(
+            $day,
+            substr($schedule->start_time, 0, 5),
+            substr($schedule->end_time, 0, 5),
+            $reservedTimes,
+            $now,
+        );
+    }
+
+    /**
+     * @return list<string>
+     */
+    public static function scheduledTimesFor(string $date): array
+    {
+        $day = CarbonImmutable::parse($date, self::TIMEZONE)->startOfDay();
+        $schedule = DB::table('doctor_weekly_schedules')
+            ->where('day_of_week', $day->dayOfWeekIso)
+            ->first(['is_open', 'start_time', 'end_time']);
+
+        if (
+            $schedule === null
+            || ! (bool) $schedule->is_open
+            || ! is_string($schedule->start_time)
+            || ! is_string($schedule->end_time)
+        ) {
+            return [];
+        }
+
+        return self::timesForDay(
+            $day,
+            substr($schedule->start_time, 0, 5),
+            substr($schedule->end_time, 0, 5),
+            [],
+            CarbonImmutable::createFromTimestamp(0, self::TIMEZONE),
+        );
     }
 
     public static function nextAvailableDate(): string
@@ -85,18 +132,39 @@ class Appointment extends Model
         $now = CarbonImmutable::now(self::TIMEZONE);
         $date = $now->startOfDay();
         $lastDate = $date->addDays(369);
+        $weeklySchedules = DB::table('doctor_weekly_schedules')
+            ->get(['day_of_week', 'is_open', 'start_time', 'end_time'])
+            ->keyBy('day_of_week');
         $reservationsByDate = DB::table('appointment_slot_reservations')
             ->whereBetween('appointment_date', [$date->toDateString(), $lastDate->toDateString()])
             ->get(['appointment_date', 'appointment_time'])
             ->groupBy(static fn (object $reservation): string => CarbonImmutable::parse($reservation->appointment_date, self::TIMEZONE)->toDateString());
+        $closedDates = DB::table('doctor_schedule_closures')
+            ->whereBetween('closed_on', [$date->toDateString(), $lastDate->toDateString()])
+            ->pluck('closed_on')
+            ->all();
 
         for ($day = 0; $day < 370; $day++) {
             $reservedTimes = $reservationsByDate
                 ->get($date->toDateString(), collect())
                 ->map(static fn (object $reservation): string => substr($reservation->appointment_time, 0, 5))
                 ->all();
+            $schedule = $weeklySchedules->get($date->dayOfWeekIso);
 
-            if (self::timesForDay($date, $reservedTimes, $now) !== []) {
+            if (
+                ! in_array($date->toDateString(), $closedDates, true)
+                && $schedule !== null
+                && (bool) $schedule->is_open
+                && is_string($schedule->start_time)
+                && is_string($schedule->end_time)
+                && self::timesForDay(
+                    $date,
+                    substr($schedule->start_time, 0, 5),
+                    substr($schedule->end_time, 0, 5),
+                    $reservedTimes,
+                    $now,
+                ) !== []
+            ) {
                 return $date->toDateString();
             }
 
@@ -110,14 +178,26 @@ class Appointment extends Model
      * @param  list<string>  $reservedTimes
      * @return list<string>
      */
-    private static function timesForDay(CarbonImmutable $day, array $reservedTimes, CarbonImmutable $now): array
-    {
-        if ($day->isWeekend() || $day->lt($now->startOfDay())) {
+    private static function timesForDay(
+        CarbonImmutable $day,
+        string $startTime,
+        string $endTime,
+        array $reservedTimes,
+        CarbonImmutable $now,
+    ): array {
+        if ($day->lt($now->startOfDay())) {
             return [];
         }
 
-        $closingTime = $day->setTime(8, 0)->addHours($day->isFriday() ? 3 : 4);
-        $slot = $day->setTime(8, 0);
+        $openingTime = CarbonImmutable::createFromFormat('!H:i', $startTime, self::TIMEZONE);
+        $closingTime = CarbonImmutable::createFromFormat('!H:i', $endTime, self::TIMEZONE);
+
+        if (! $openingTime instanceof CarbonImmutable || ! $closingTime instanceof CarbonImmutable) {
+            return [];
+        }
+
+        $slot = $day->setTime($openingTime->hour, $openingTime->minute);
+        $closingTime = $day->setTime($closingTime->hour, $closingTime->minute);
         $availableTimes = [];
 
         while ($slot->lt($closingTime)) {
@@ -131,5 +211,16 @@ class Appointment extends Model
         }
 
         return $availableTimes;
+    }
+
+    private static function isClosedOn(CarbonImmutable $day): bool
+    {
+        if ($day->isToday()) {
+            return DB::table('doctor_schedule_closures')
+                ->whereDate('closed_on', $day->toDateString())
+                ->exists();
+        }
+
+        return false;
     }
 }

@@ -3,9 +3,11 @@
 namespace Tests\Feature;
 
 use App\Models\Appointment;
+use App\Models\DoctorProfile;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class DoctorDashboardTest extends TestCase
@@ -17,15 +19,31 @@ class DoctorDashboardTest extends TestCase
         $this->travelTo(CarbonImmutable::parse('2026-10-09 07:30:00', Appointment::TIMEZONE));
         $patient = User::factory()->create(['name' => 'Sinta Amelia']);
 
-        Appointment::factory()->for($patient, 'patient')->create([
+        $pendingAppointment = Appointment::factory()->for($patient, 'patient')->create([
             'appointment_date' => '2026-10-09',
             'appointment_time' => '08:00',
             'status' => Appointment::STATUS_PENDING,
         ]);
-        Appointment::factory()->for($patient, 'patient')->create([
+        $confirmedAppointment = Appointment::factory()->for($patient, 'patient')->create([
             'appointment_date' => '2026-10-09',
             'appointment_time' => '08:30',
             'status' => Appointment::STATUS_CONFIRMED,
+        ]);
+        DB::table('appointment_slot_reservations')->insert([
+            [
+                'appointment_date' => '2026-10-09',
+                'appointment_time' => '08:00',
+                'appointment_id' => $pendingAppointment->id,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'appointment_date' => '2026-10-09',
+                'appointment_time' => '08:30',
+                'appointment_id' => $confirmedAppointment->id,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
         Appointment::factory()->for($patient, 'patient')->create([
             'appointment_date' => '2026-10-09',
@@ -51,18 +69,40 @@ class DoctorDashboardTest extends TestCase
             ->assertViewHas('appointmentCount', 3)
             ->assertViewHas('waitingAppointmentCount', 1)
             ->assertViewHas('completedAppointmentCount', 1)
-            ->assertViewHas('availableSlotCount', 3)
+            ->assertViewHas('availableSlotCount', 4)
             ->assertViewHas('appointments', fn ($appointments) => $appointments->count() === 5)
             ->assertSee('Sinta Amelia')
             ->assertSee('Dibatalkan')
             ->assertSee('10 Okt 2026')
-            ->assertSee('Jumat, 9 Oktober 2026');
+            ->assertSee('Jumat, 9 Oktober 2026')
+            ->assertDontSee('<span class="font-medium">Jumat, 9 Oktober 2026</span>', false);
     }
 
     public function test_doctor_dashboard_requires_a_doctor_session(): void
     {
         $this->get(route('dokter.dashboard'))
             ->assertRedirect(route('dokter.login'));
+    }
+
+    public function test_doctor_dashboard_header_displays_the_saved_doctor_profile(): void
+    {
+        DoctorProfile::query()->create([
+            'full_name' => 'Maya Pratama',
+            'title' => 'dr.',
+            'specialization' => 'Dokter Anak',
+            'photo_path' => 'doctor-profile/maya.jpg',
+        ]);
+
+        $this->withoutVite()
+            ->withSession(['doctor_authenticated' => true])
+            ->get(route('dokter.dashboard'))
+            ->assertOk()
+            ->assertSee('Selamat pagi, dr. Maya Pratama')
+            ->assertSee('dr. Maya Pratama')
+            ->assertSee('Dokter Anak')
+            ->assertSee('src="'.route('dokter.profil.photo').'"', false)
+            ->assertDontSee('dr. Andi')
+            ->assertDontSee('Doctor_portrait.png');
     }
 
     public function test_doctor_dashboard_displays_future_appointments(): void

@@ -3,6 +3,7 @@
 use App\Http\Controllers\DoctorAccessController;
 use App\Http\Controllers\DoctorAppointmentController;
 use App\Http\Controllers\DoctorProfileController;
+use App\Http\Controllers\DoctorScheduleController;
 use App\Http\Controllers\PatientAppointmentController;
 use App\Http\Controllers\PatientLoginController;
 use App\Http\Controllers\PatientRegistrationController;
@@ -20,7 +21,9 @@ Route::middleware('web')->group(function () {
     Route::get('/dokter/janji', [DoctorAppointmentController::class, 'index'])->name('dokter.janji');
     Route::patch('/dokter/janji/{appointment}', [DoctorAppointmentController::class, 'update'])
         ->name('dokter.janji.status');
-    Route::get('/dokter/jadwal', [DoctorAccessController::class, 'pengaturanJadwal'])->name('dokter.jadwal');
+    Route::get('/dokter/jadwal', [DoctorScheduleController::class, 'index'])->name('dokter.jadwal');
+    Route::post('/dokter/jadwal', [DoctorScheduleController::class, 'update'])->name('dokter.jadwal.update');
+    Route::post('/dokter/jadwal/status', [DoctorScheduleController::class, 'updateTodayStatus'])->name('dokter.jadwal.status');
     Route::get('/dokter/profil', [DoctorProfileController::class, 'show'])->name('dokter.profil');
     Route::post('/dokter/profil', [DoctorProfileController::class, 'update'])->name('dokter.profil.update');
     Route::post('/dokter/profil/kode-akses', [DoctorProfileController::class, 'updateAccessCode'])->name('dokter.profil.access-code');

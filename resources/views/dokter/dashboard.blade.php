@@ -84,7 +84,7 @@
                     </button>
                     <div>
                         <p class="text-xs font-semibold text-blue-600 uppercase tracking-wider">Beranda</p>
-                        <h1 class="text-2xl font-bold text-slate-900 mt-0.5">Selamat pagi, dr. Andi</h1>
+                        <h1 class="text-2xl font-bold text-slate-900 mt-0.5">Selamat pagi, {{ $doctorDisplayName }}</h1>
                         <p class="text-sm text-slate-400 mt-0.5">Berikut ringkasan aktivitas klinik hari ini.</p>
                     </div>
                 </div>
@@ -92,10 +92,10 @@
                     <p class="whitespace-nowrap text-[10px] text-slate-500 sm:hidden">{{ now()->format('d/m/Y') }}</p>
                     <p class="hidden whitespace-nowrap text-xs text-slate-500 sm:block">{{ now()->locale('id')->translatedFormat('l, j F Y') }}</p>
                     <div class="flex items-center gap-2.5 rounded-full border border-slate-200 bg-white px-2 py-1.5 shadow-sm">
-                        <img src="{{ asset('img/Doctor_portrait.png') }}" alt="" class="size-9 rounded-full object-cover">
+                        <img src="{{ $profile?->photo_path ? route('dokter.profil.photo') : asset('img/Doctor_portrait.png') }}" alt="" class="size-9 rounded-full object-cover">
                         <div class="mr-1 leading-tight">
-                            <p class="text-sm font-semibold text-slate-800">dr. Andi</p>
-                            <p class="text-[11px] text-slate-400">Dokter Umum</p>
+                            <p class="text-sm font-semibold text-slate-800">{{ $doctorDisplayName }}</p>
+                            <p class="text-[11px] text-slate-400">{{ $doctorSpecialization }}</p>
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
@@ -192,15 +192,6 @@
                         <div>
                             <h2 class="text-base font-bold text-slate-900">Jadwal Mendatang</h2>
                             <p class="text-xs text-slate-400 mt-0.5">10 janji terdekat, mulai hari ini.</p>
-                        </div>
-                        <div class="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm text-slate-600 cursor-pointer hover:bg-slate-100 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            <span class="font-medium">{{ $dashboardDate }}</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                            </svg>
                         </div>
                     </div>
 

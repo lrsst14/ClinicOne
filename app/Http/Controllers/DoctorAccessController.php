@@ -58,6 +58,7 @@ class DoctorAccessController extends Controller
         }
 
         $today = CarbonImmutable::today(Appointment::TIMEZONE);
+        $profile = DoctorProfile::query()->first();
         $todayAppointments = Appointment::query()
             ->whereDate('appointment_date', $today->toDateString())
             ->get(['id', 'status']);
@@ -71,19 +72,16 @@ class DoctorAccessController extends Controller
             ->get();
 
         $activeAppointments = $todayAppointments->whereIn('status', Appointment::ACTIVE_STATUSES);
-        $dailySlotCapacity = match ($today->dayOfWeekIso) {
-            1, 2, 3, 4 => 8,
-            5 => 6,
-            default => 0,
-        };
 
         return view('dokter.dashboard', [
             'appointments' => $appointments,
             'appointmentCount' => $activeAppointments->count(),
             'waitingAppointmentCount' => $activeAppointments->where('status', Appointment::STATUS_PENDING)->count(),
             'completedAppointmentCount' => $activeAppointments->where('status', Appointment::STATUS_COMPLETED)->count(),
-            'availableSlotCount' => max(0, $dailySlotCapacity - $activeAppointments->count()),
-            'dashboardDate' => $today->locale('id')->translatedFormat('l, j F Y'),
+            'availableSlotCount' => count(Appointment::availableTimesFor($today->toDateString())),
+            'profile' => $profile,
+            'doctorDisplayName' => trim(($profile?->title ?: 'dr.').' '.($profile?->full_name ?: 'Andi')),
+            'doctorSpecialization' => $profile?->specialization ?: 'Dokter Umum',
         ]);
     }
 
@@ -96,17 +94,6 @@ class DoctorAccessController extends Controller
         }
 
         return view('dokter.kelola-janji');
-    }
-
-    public function pengaturanJadwal(Request $request): View|RedirectResponse
-    {
-        if (! $request->session()->get('doctor_authenticated')) {
-            return redirect()->route('dokter.login')->withErrors([
-                'access_code' => 'Silakan masuk terlebih dahulu.',
-            ]);
-        }
-
-        return view('dokter.pengaturan-jadwal');
     }
 
     public function logout(Request $request): RedirectResponse

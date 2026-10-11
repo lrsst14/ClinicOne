@@ -41,6 +41,29 @@ class PatientAppointmentController extends Controller
         $validated = $request->validated();
 
         DB::transaction(function () use ($request, $validated): void {
+            $appointmentDate = CarbonImmutable::parse($validated['appointment_date'], Appointment::TIMEZONE);
+            $weeklySchedule = DB::table('doctor_weekly_schedules')
+                ->where('day_of_week', $appointmentDate->dayOfWeekIso)
+                ->lockForUpdate()
+                ->first(['is_open']);
+
+            if (
+                $weeklySchedule === null
+                || ! (bool) $weeklySchedule->is_open
+                || DB::table('doctor_schedule_closures')
+                    ->whereDate('closed_on', $appointmentDate->toDateString())
+                    ->exists()
+                || ! in_array(
+                    $validated['appointment_time'],
+                    Appointment::availableTimesFor($validated['appointment_date']),
+                    true,
+                )
+            ) {
+                throw ValidationException::withMessages([
+                    'appointment_time' => 'Slot jadwal tidak tersedia. Silakan pilih waktu lain.',
+                ]);
+            }
+
             $now = now();
             $reservationCreated = $this->reserveFutureSlot(
                 $validated['appointment_date'],
