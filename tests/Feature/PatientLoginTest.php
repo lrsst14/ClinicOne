@@ -38,6 +38,42 @@ class PatientLoginTest extends TestCase
         $this->get(route('pasien.dashboard'))->assertOk();
     }
 
+    public function test_patient_identity_matches_the_authenticated_user_on_every_patient_page(): void
+    {
+        $this->withoutVite();
+
+        $patientPages = [
+            route('pasien.dashboard'),
+            route('pasien.pendaftaran'),
+            route('pasien.jadwal'),
+            route('pasien.riwayat'),
+            route('pasien.profil-dokter'),
+        ];
+        $patients = User::factory()->count(2)->sequence(
+            ['name' => 'Rani Wijaya'],
+            ['name' => 'Dewi Lestari'],
+        )->create();
+
+        foreach ($patients as $patient) {
+            $this->actingAs($patient);
+
+            foreach ($patientPages as $patientPage) {
+                $response = $this->get($patientPage)
+                    ->assertOk()
+                    ->assertSee('aria-label="Akun '.e($patient->name).'"', false)
+                    ->assertSee('<span class="user-initials" aria-hidden="true">'.mb_substr($patient->name, 0, 1).'</span>', false)
+                    ->assertSee('<span class="user-name">'.e($patient->name).'</span><span class="user-id">Pasien &bull; ID '.$patient->id.'</span></span></button>', false)
+                    ->assertDontSee('user-chevron', false);
+
+                if ($patientPage === route('pasien.dashboard')) {
+                    $response
+                        ->assertSee('data-time-greeting', false)
+                        ->assertSee(', '.e($patient->name).'!');
+                }
+            }
+        }
+    }
+
     public function test_patient_can_remain_logged_in_when_remember_me_is_selected(): void
     {
         $user = User::factory()->create([

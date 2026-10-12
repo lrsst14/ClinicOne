@@ -219,7 +219,7 @@
                 <div class="topbar-actions">
                     <span class="topbar-date">{{ now()->locale('id')->translatedFormat('l, j F Y') }}</span>
                     <span class="topbar-divider" aria-hidden="true"></span>
-                    <button class="user-menu" type="button" aria-label="Akun Nadia Putri"><span class="user-initials" aria-hidden="true">NP</span><span><span class="user-name">Nadia Putri</span><span class="user-id">Pasien &bull; PS-00128</span></span><svg class="user-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>
+                    <button class="user-menu" type="button" aria-label="Akun {{ auth()->user()->name }}"><span class="user-initials" aria-hidden="true">{{ mb_substr(auth()->user()->name, 0, 1) }}</span><span><span class="user-name">{{ auth()->user()->name }}</span><span class="user-id">Pasien &bull; ID {{ auth()->id() }}</span></span></button>
                 </div>
             </header>
 

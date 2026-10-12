@@ -53,7 +53,7 @@
         .topbar-date { color: #8293ad; font-size: 11px; white-space: nowrap; }
         .divider { width: 1px; height: 25px; background: #e6edf6; }
         .user-menu { display: flex; align-items: center; gap: 8px; border: 0; background: transparent; text-align: left; }
-        .initials { display: grid; width: 27px; height: 27px; place-items: center; border-radius: 50%; color: #347cf0; background: #eaf2ff; font-size: 11.3px; font-weight: 600; }
+        .user-initials { display: grid; width: 27px; height: 27px; place-items: center; border-radius: 50%; color: #347cf0; background: #eaf2ff; font-size: 11.3px; font-weight: 600; }
         .user-name { display: block; color: #29405f; font-size: 11px; font-weight: 600; }
         .user-id { display: block; margin-top: 2px; color: #8293ad; font-size: 11px; }
 
@@ -215,7 +215,7 @@
                 <div class="topbar-actions">
                     <span class="topbar-date">{{ \Carbon\CarbonImmutable::now(\App\Models\Appointment::TIMEZONE)->locale('id')->translatedFormat('l, j F Y') }}</span>
                     <span class="divider" aria-hidden="true"></span>
-                    <button class="user-menu" type="button" aria-label="Akun {{ auth()->user()->name }}"><span class="initials">{{ mb_substr(auth()->user()->name, 0, 1) }}</span><span><span class="user-name">{{ auth()->user()->name }}</span><span class="user-id">Pasien</span></span><svg class="user-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>
+                    <button class="user-menu" type="button" aria-label="Akun {{ auth()->user()->name }}"><span class="user-initials" aria-hidden="true">{{ mb_substr(auth()->user()->name, 0, 1) }}</span><span><span class="user-name">{{ auth()->user()->name }}</span><span class="user-id">Pasien &bull; ID {{ auth()->id() }}</span></span></button>
                 </div>
             </header>
 

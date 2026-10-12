@@ -224,13 +224,13 @@
                 <div class="topbar-actions">
                     <span class="topbar-date">{{ now()->locale('id')->translatedFormat('l, j F Y') }}</span>
                     <span class="topbar-divider" aria-hidden="true"></span>
-                    <button class="user-menu" type="button" aria-label="Akun Nadia Putri"><span class="user-initials" aria-hidden="true">NP</span><span><span class="user-name">Nadia Putri</span><span class="user-id">Pasien &bull; PS-00128</span></span><svg class="user-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>
+                    <button class="user-menu" type="button" aria-label="Akun {{ auth()->user()->name }}"><span class="user-initials" aria-hidden="true">{{ mb_substr(auth()->user()->name, 0, 1) }}</span><span><span class="user-name">{{ auth()->user()->name }}</span><span class="user-id">Pasien &bull; ID {{ auth()->id() }}</span></span></button>
                 </div>
             </header>
 
             <main class="page-content">
                 <section class="welcome-row" aria-label="Ringkasan beranda">
-                    <div class="welcome-heading"><h1>Selamat pagi, Nadia!</h1><p>Semoga hari Anda menyenangkan. Mari jaga kesehatan bersama ClinicOne.</p></div>
+                    <div class="welcome-heading"><h1><span data-time-greeting>Selamat pagi</span>, {{ auth()->user()->name }}!</h1><p>Semoga hari Anda menyenangkan. Mari jaga kesehatan bersama ClinicOne.</p></div>
                     <a class="primary-button" href="{{ route('pasien.pendaftaran') }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14m-7-7h14"/></svg>Daftar pemeriksaan</a>
                 </section>
 
@@ -296,10 +296,21 @@
     <script>
         (() => {
             const app = document.querySelector('.dashboard');
+            const timeGreeting = app.querySelector('[data-time-greeting]');
             const menuToggle = document.querySelector('.mobile-menu-toggle');
             const sidebarBackdrop = document.querySelector('.sidebar-backdrop');
             const firstSidebarLink = app.querySelector('.sidebar .nav-link');
             const mobileViewport = window.matchMedia('(max-width: 680px)');
+            const localHour = new Date().getHours();
+            const greeting = localHour >= 5 && localHour < 11
+                ? 'Selamat pagi'
+                : localHour >= 11 && localHour < 15
+                    ? 'Selamat siang'
+                    : localHour >= 15 && localHour < 19
+                        ? 'Selamat sore'
+                        : 'Selamat malam';
+
+            timeGreeting.textContent = greeting;
 
             function setSidebarOpen(isOpen, restoreFocus = false) {
                 const isMobileViewport = mobileViewport.matches;
