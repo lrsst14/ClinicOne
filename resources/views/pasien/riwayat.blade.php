@@ -209,7 +209,7 @@
             <div class="sidebar-bottom">
                 <div class="clinic-status">
                     <div class="clinic-status-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h18M5 20V6h9v14m0-9h5v9M8 9h2m-2 4h2m-2 4h2m7-1h.01"/></svg>Klinik siap melayani</div>
-                    <p>Jam praktik: 08.00 - 12.00</p>
+                    <p>Jadwal rutin hari ini: @if ($todaySchedule?->is_open && $todaySchedule->start_time && $todaySchedule->end_time) {{ substr($todaySchedule->start_time, 0, 5) }}–{{ substr($todaySchedule->end_time, 0, 5) }} WIB @else Tutup @endif</p>
                 </div>
                 <form class="logout-form" action="{{ route('pasien.logout') }}" method="POST">
                     @csrf
@@ -234,79 +234,77 @@
 
             <main class="page-content">
                 <header class="page-heading">
-                    <div><h1>Riwayat pemeriksaan</h1><p>Catatan kunjungan, hasil pemeriksaan, dan resep Anda tersimpan dengan aman.</p></div>
-                    <button class="outline-button" type="button" data-print><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5"/><path d="M5 17v3h14v-3"/></svg>Unduh riwayat</button>
+                    <div><h1>Riwayat pemeriksaan</h1><p>Janji pemeriksaan dan keluhan yang tersimpan pada akun Anda.</p></div>
+                    <button class="outline-button" type="button" data-print><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5"/><path d="M5 17v3h14v-3"/></svg>Cetak riwayat</button>
                 </header>
 
                 <form class="card filter-card" id="history-filters" role="search">
                     <div class="filter-field">
                         <label for="history-search">Cari riwayat</label>
-                        <span class="input-wrap"><input class="filter-control search-input" id="history-search" type="search" placeholder="Cari keluhan, diagnosis, atau nomor pemeriksaan"><svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></span>
+                        <span class="input-wrap"><input class="filter-control search-input" id="history-search" type="search" placeholder="Cari keluhan atau nomor janji"><svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></span>
                     </div>
                     <div class="filter-field">
                         <label for="history-year">Tahun</label>
-                        <select class="filter-control" id="history-year"><option value="all">Semua tahun</option><option value="2026" selected>2026</option></select>
+                        <select class="filter-control" id="history-year">
+                            <option value="all">Semua tahun</option>
+                            @foreach ($appointments->pluck('appointment_date')->map(fn ($date) => $date->format('Y'))->unique()->sortDesc() as $year)
+                                <option value="{{ $year }}">{{ $year }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="filter-field">
                         <label for="history-status">Status pemeriksaan</label>
-                        <select class="filter-control" id="history-status"><option value="all">Semua status</option><option value="Selesai">Selesai</option></select>
+                        <select class="filter-control" id="history-status">
+                            <option value="all">Semua status</option>
+                            @foreach ($statusLabels as $status => $label)
+                                @if ($appointments->contains('status', $status))
+                                    <option value="{{ $label }}">{{ $label }}</option>
+                                @endif
+                            @endforeach
+                        </select>
                     </div>
                 </form>
 
                 <div class="history-layout">
                     <aside class="history-sidebar">
-                        <div class="list-heading"><h2>Daftar kunjungan</h2><span class="record-count" id="record-count">3 pemeriksaan</span></div>
+                        <div class="list-heading"><h2>Daftar kunjungan</h2><span class="record-count" id="record-count">{{ $appointments->count() }} pemeriksaan</span></div>
                         <div class="record-list" id="record-list">
-                            <button class="record-card is-selected" type="button" data-record="rm-260924-003" data-year="2026" data-status="Selesai" aria-pressed="true">
-                                <span class="record-topline"><span class="record-date">24 September 2026</span><span class="status-badge">Selesai</span></span>
-                                <span class="record-title">Pemeriksaan umum</span>
-                                <span class="record-description">ISPA ringan &bull; dr. Andi</span>
-                                <span class="record-code"><span>RM-260924-003</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>
-                            </button>
-                            <button class="record-card" type="button" data-record="rm-260810-002" data-year="2026" data-status="Selesai" aria-pressed="false">
-                                <span class="record-topline"><span class="record-date">10 Agustus 2026</span><span class="status-badge">Selesai</span></span>
-                                <span class="record-title">Kontrol kesehatan</span>
-                                <span class="record-description">Kondisi umum baik &bull; dr. Andi</span>
-                                <span class="record-code"><span>RM-260810-002</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>
-                            </button>
-                            <button class="record-card" type="button" data-record="rm-260618-001" data-year="2026" data-status="Selesai" aria-pressed="false">
-                                <span class="record-topline"><span class="record-date">18 Juni 2026</span><span class="status-badge">Selesai</span></span>
-                                <span class="record-title">Pemeriksaan umum</span>
-                                <span class="record-description">Gastritis ringan &bull; dr. Andi</span>
-                                <span class="record-code"><span>RM-260618-001</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>
-                            </button>
+                            @forelse ($appointments as $index => $appointment)
+                                @php($statusLabel = $statusLabels[$appointment->status] ?? $appointment->status)
+                                <button class="record-card{{ $index === 0 ? ' is-selected' : '' }}" type="button" data-record="{{ $appointment->id }}" data-year="{{ $appointment->appointment_date->format('Y') }}" data-status="{{ $statusLabel }}" data-date="{{ $appointment->appointment_date->locale('id')->translatedFormat('j F Y') }}" data-time="{{ substr($appointment->appointment_time, 0, 5) }}" data-complaint="{{ $appointment->complaint }}" aria-pressed="{{ $index === 0 ? 'true' : 'false' }}">
+                                    <span class="record-topline"><span class="record-date">{{ $appointment->appointment_date->locale('id')->translatedFormat('j F Y') }}</span><span class="status-badge">{{ $statusLabel }}</span></span>
+                                    <span class="record-title">{{ $doctorSpecialization }}</span>
+                                    <span class="record-description">{{ $appointment->complaint }}</span>
+                                    <span class="record-code"><span>No. janji #{{ $appointment->id }}</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>
+                                </button>
+                            @empty
+                                <p class="card-description">Belum ada data kunjungan.</p>
+                            @endforelse
                         </div>
                         <p class="empty-state" id="empty-state">Tidak ada riwayat yang sesuai dengan pencarian atau filter Anda.</p>
                         <section class="card patient-card" aria-labelledby="patient-title">
                             <h2 id="patient-title">Identitas pasien</h2>
                             <div class="patient-details">
-                                <div class="patient-detail"><span>Nama pasien</span><strong>Nadia Putri</strong></div>
-                                <div class="patient-detail"><span>Nomor rekam medis</span><strong>PS-00128 &bull; Perempuan, 28 tahun</strong></div>
+                                <div class="patient-detail"><span>Nama pasien</span><strong>{{ $patient->name }}</strong></div>
+                                <div class="patient-detail"><span>ID akun</span><strong>{{ $patient->id }}</strong></div>
+                                @if ($patient->gender)
+                                    <div class="patient-detail"><span>Jenis kelamin</span><strong>{{ $patient->gender }}</strong></div>
+                                @endif
+                                @if ($patient->birth_date)
+                                    <div class="patient-detail"><span>Tanggal lahir</span><strong>{{ $patient->birth_date->locale('id')->translatedFormat('j F Y') }}</strong></div>
+                                @endif
                             </div>
                         </section>
                     </aside>
 
                     <section class="card exam-card" aria-labelledby="exam-title">
                         <div class="exam-heading">
-                            <div><h2 id="exam-title">Detail pemeriksaan</h2><p class="exam-meta" id="exam-meta">24 September 2026 &bull; 09.00 WIB &bull; RM-260924-003</p></div>
-                            <span class="status-badge" id="exam-status">Selesai</span>
+                            <div><h2 id="exam-title">Detail janji</h2><p class="exam-meta" id="exam-meta">@if ($appointments->isNotEmpty()) {{ $appointments->first()->appointment_date->locale('id')->translatedFormat('j F Y') }} &bull; {{ substr($appointments->first()->appointment_time, 0, 5) }} WIB &bull; #{{ $appointments->first()->id }} @else Belum ada janji pemeriksaan @endif</p></div>
+                            <span class="status-badge" id="exam-status">{{ $appointments->isNotEmpty() ? ($statusLabels[$appointments->first()->status] ?? $appointments->first()->status) : '' }}</span>
                         </div>
-                        <div class="doctor-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4H5a2 2 0 0 0-2 2v2a7 7 0 0 0 7 7h1a7 7 0 0 0 7-7V6a2 2 0 0 0-2-2h-2v5h4"/><path d="M11 15v1a4 4 0 0 0 4 4h2"/><circle cx="19" cy="20" r="2"/></svg><span id="doctor-summary">Ditangani oleh dr. Andi &bull; Dokter Umum</span></div>
-                        <div class="vitals-grid">
-                            <div class="vital-card"><span class="vital-label">Tekanan darah</span><strong class="vital-value" id="vital-pressure">118/78</strong><span class="vital-unit">mmHg</span></div>
-                            <div class="vital-card"><span class="vital-label">Denyut nadi</span><strong class="vital-value" id="vital-pulse">78</strong><span class="vital-unit">kali/menit</span></div>
-                            <div class="vital-card"><span class="vital-label">Suhu tubuh</span><strong class="vital-value" id="vital-temperature">37,4</strong><span class="vital-unit">&deg;C</span></div>
-                            <div class="vital-card"><span class="vital-label">Berat badan</span><strong class="vital-value" id="vital-weight">54</strong><span class="vital-unit">kg</span></div>
-                        </div>
-                        <section class="exam-section"><h3>Keluhan utama</h3><p id="exam-complaint">Batuk, pilek, dan demam ringan selama 3 hari. Tidak ada sesak napas. Nafsu makan sedikit menurun.</p></section>
-                        <section class="exam-section"><h3>Diagnosis</h3><p id="exam-diagnosis">Infeksi saluran pernapasan atas (ISPA) ringan.</p></section>
-                        <section class="prescriptions" aria-labelledby="prescription-title">
-                            <h3 class="prescription-heading" id="prescription-title">Resep obat</h3>
-                            <div class="prescription"><span class="prescription-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 15 6-6"/><path d="M7.5 17.5a4 4 0 0 1 0-5.7l4.3-4.3a4 4 0 0 1 5.7 5.7l-4.3 4.3a4 4 0 0 1-5.7 0Z"/></svg></span><strong id="medicine-one">Paracetamol 500 mg</strong><span id="dose-one">3&times; sehari bila demam, sesudah makan &bull; 3 hari</span></div>
-                            <div class="prescription"><span class="prescription-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 15 6-6"/><path d="M7.5 17.5a4 4 0 0 1 0-5.7l4.3-4.3a4 4 0 0 1 5.7 5.7l-4.3 4.3a4 4 0 0 1-5.7 0Z"/></svg></span><strong id="medicine-two">Cetirizine 10 mg</strong><span id="dose-two">1&times; sehari pada malam hari &bull; 5 hari</span></div>
-                        </section>
-                        <div class="advice"><strong>Anjuran dokter</strong><p id="exam-advice">Istirahat cukup dan perbanyak minum air. Kembali ke klinik jika demam berlanjut atau muncul sesak napas. Janji kontrol: 9 Oktober 2026, 09.00 WIB.</p></div>
-                        <div class="exam-footer"><span>Catatan ini merupakan ringkasan pemeriksaan Anda.</span><button class="outline-button" type="button" data-print><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5"/><path d="M5 17v3h14v-3"/></svg>Unduh hasil</button></div>
+                        <div class="doctor-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4H5a2 2 0 0 0-2 2v2a7 7 0 0 0 7 7h1a7 7 0 0 0 7-7V6a2 2 0 0 0-2-2h-2v5h4"/><path d="M11 15v1a4 4 0 0 0 4 4h2"/><circle cx="19" cy="20" r="2"/></svg><span>Dokter: {{ $doctorDisplayName }} &bull; {{ $doctorSpecialization }}</span></div>
+                        <section class="exam-section"><h3>Keluhan / tujuan kunjungan</h3><p id="exam-complaint">{{ $appointments->first()?->complaint ?? 'Belum ada data keluhan.' }}</p></section>
+                        <div class="exam-footer"><span>Informasi janji dan keluhan sesuai data yang tersimpan.</span><button class="outline-button" type="button" data-print><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5"/><path d="M5 17v3h14v-3"/></svg>Cetak ringkasan</button></div>
                     </section>
                 </div>
             </main>
@@ -322,60 +320,19 @@
             const recordCards = Array.from(document.querySelectorAll('.record-card'));
             const count = document.getElementById('record-count');
             const emptyState = document.getElementById('empty-state');
+            if (recordCards.length === 0) {
+                emptyState.textContent = 'Belum ada data kunjungan.';
+            }
             const detailFields = {
                 meta: document.getElementById('exam-meta'),
                 status: document.getElementById('exam-status'),
-                pressure: document.getElementById('vital-pressure'),
-                pulse: document.getElementById('vital-pulse'),
-                temperature: document.getElementById('vital-temperature'),
-                weight: document.getElementById('vital-weight'),
                 complaint: document.getElementById('exam-complaint'),
-                diagnosis: document.getElementById('exam-diagnosis'),
-                medicineOne: document.getElementById('medicine-one'),
-                doseOne: document.getElementById('dose-one'),
-                medicineTwo: document.getElementById('medicine-two'),
-                doseTwo: document.getElementById('dose-two'),
-                advice: document.getElementById('exam-advice'),
-            };
-            const records = {
-                'rm-260924-003': {
-                    meta: '24 September 2026 • 09.00 WIB • RM-260924-003',
-                    pressure: '118/78', pulse: '78', temperature: '37,4', weight: '54',
-                    complaint: 'Batuk, pilek, dan demam ringan selama 3 hari. Tidak ada sesak napas. Nafsu makan sedikit menurun.',
-                    diagnosis: 'Infeksi saluran pernapasan atas (ISPA) ringan.',
-                    medicineOne: 'Paracetamol 500 mg', doseOne: '3× sehari bila demam, sesudah makan • 3 hari',
-                    medicineTwo: 'Cetirizine 10 mg', doseTwo: '1× sehari pada malam hari • 5 hari',
-                    advice: 'Istirahat cukup dan perbanyak minum air. Kembali ke klinik jika demam berlanjut atau muncul sesak napas. Janji kontrol: 9 Oktober 2026, 09.00 WIB.',
-                },
-                'rm-260810-002': {
-                    meta: '10 Agustus 2026 • 10.30 WIB • RM-260810-002',
-                    pressure: '116/76', pulse: '74', temperature: '36,8', weight: '54',
-                    complaint: 'Kontrol rutin. Kondisi badan terasa lebih segar dan tidak ada keluhan baru.',
-                    diagnosis: 'Kondisi umum baik. Tanda vital dalam batas normal.',
-                    medicineOne: 'Vitamin B kompleks', doseOne: '1× sehari sesudah makan • 7 hari',
-                    medicineTwo: '—', doseTwo: 'Tidak ada resep tambahan.',
-                    advice: 'Pertahankan pola makan seimbang, istirahat cukup, dan lanjutkan aktivitas secara bertahap.',
-                },
-                'rm-260618-001': {
-                    meta: '18 Juni 2026 • 08.30 WIB • RM-260618-001',
-                    pressure: '120/80', pulse: '80', temperature: '36,9', weight: '55',
-                    complaint: 'Nyeri ulu hati setelah terlambat makan, disertai mual ringan.',
-                    diagnosis: 'Gastritis ringan.',
-                    medicineOne: 'Antasida DOEN', doseOne: '3× sehari sebelum makan • 5 hari',
-                    medicineTwo: 'Omeprazole 20 mg', doseTwo: '1× sehari sebelum sarapan • 7 hari',
-                    advice: 'Makan teratur dalam porsi kecil dan hindari makanan pedas serta minuman berkafein untuk sementara.',
-                },
             };
 
             function updateDetails(recordCard) {
-                const record = records[recordCard.dataset.record];
-                detailFields.meta.textContent = record.meta;
+                detailFields.meta.textContent = `${recordCard.dataset.date} • ${recordCard.dataset.time} WIB • #${recordCard.dataset.record}`;
                 detailFields.status.textContent = recordCard.dataset.status;
-                Object.entries(record).forEach(([key, value]) => {
-                    if (detailFields[key]) {
-                        detailFields[key].textContent = value;
-                    }
-                });
+                detailFields.complaint.textContent = recordCard.dataset.complaint;
             }
 
             function updateList() {
@@ -392,7 +349,7 @@
                     return isVisible;
                 });
                 count.textContent = `${visibleRecords.length} pemeriksaan`;
-                emptyState.classList.toggle('is-visible', visibleRecords.length === 0);
+                emptyState.classList.toggle('is-visible', visibleRecords.length === 0 && recordCards.length > 0);
 
                 if (!visibleRecords.some((recordCard) => recordCard.classList.contains('is-selected')) && visibleRecords.length > 0) {
                     selectRecord(visibleRecords[0]);
@@ -417,6 +374,7 @@
             document.querySelectorAll('[data-print]').forEach((button) => {
                 button.addEventListener('click', () => window.print());
             });
+            updateList();
         })();
     </script>
     <script>

@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Appointment;
 use App\Models\DoctorProfile;
+use App\Models\DoctorScheduleClosure;
+use App\Models\DoctorWeeklySchedule;
+use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -29,8 +33,23 @@ class DoctorProfileController extends Controller
 
     public function showForPatients(): View
     {
+        $now = CarbonImmutable::now(Appointment::TIMEZONE);
+        $today = $now->startOfDay();
+        $todaySchedule = DoctorWeeklySchedule::query()
+            ->where('day_of_week', $today->dayOfWeekIso)
+            ->first();
+        $clinicIsOpen = $todaySchedule?->is_open
+            && is_string($todaySchedule->start_time)
+            && is_string($todaySchedule->end_time)
+            && $now->format('H:i:s') >= $todaySchedule->start_time
+            && $now->format('H:i:s') < $todaySchedule->end_time
+            && ! DoctorScheduleClosure::query()->whereDate('closed_on', $today->toDateString())->exists();
+
         return view('pasien.profil-dokter', [
+            'clinicIsOpen' => $clinicIsOpen,
             'profile' => DoctorProfile::query()->first(),
+            'todaySchedule' => $todaySchedule,
+            'weeklySchedules' => DoctorWeeklySchedule::query()->orderBy('day_of_week')->get(),
         ]);
     }
 

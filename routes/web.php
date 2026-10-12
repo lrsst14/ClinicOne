@@ -40,14 +40,14 @@ Route::prefix('pasien')->name('pasien.')->group(function () {
     Route::post('/daftar', PatientRegistrationController::class)->name('register');
 
     Route::middleware('auth')->group(function () {
-        Route::view('/dashboard', 'pasien.dashboard')->name('dashboard');
+        Route::get('/dashboard', [PatientAppointmentController::class, 'dashboard'])->name('dashboard');
         Route::get('/pendaftaran', [PatientAppointmentController::class, 'index'])->name('pendaftaran');
         Route::post('/janji', [PatientAppointmentController::class, 'store'])
             ->middleware('throttle:10,1')
             ->name('janji.store');
         Route::delete('/janji/{appointment}', [PatientAppointmentController::class, 'destroy'])->name('janji.cancel');
-        Route::view('/jadwal-dokter', 'pasien.jadwal-dokter')->name('jadwal');
-        Route::view('/riwayat', 'pasien.riwayat')->name('riwayat');
+        Route::get('/jadwal-dokter', [PatientAppointmentController::class, 'schedule'])->name('jadwal');
+        Route::get('/riwayat', [PatientAppointmentController::class, 'history'])->name('riwayat');
         Route::get('/profil-dokter', [DoctorProfileController::class, 'showForPatients'])->name('profil-dokter');
         Route::post('/logout', [PatientLoginController::class, 'logout'])->name('logout');
     });

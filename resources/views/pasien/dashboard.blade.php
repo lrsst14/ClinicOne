@@ -205,7 +205,7 @@
             <div class="sidebar-bottom">
                 <div class="clinic-status">
                     <div class="clinic-status-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h18M5 20V6h9v14m0-9h5v9M8 9h2m-2 4h2m-2 4h2m7-1h.01"/></svg>Klinik siap melayani</div>
-                    <p>Jam praktik: 08.00 - 12.00</p>
+                    <p>Jadwal rutin hari ini: @if ($todaySchedule?->is_open && $todaySchedule->start_time && $todaySchedule->end_time) {{ substr($todaySchedule->start_time, 0, 5) }}–{{ substr($todaySchedule->end_time, 0, 5) }} WIB @else Tutup @endif</p>
                 </div>
                 <form class="logout-form" action="{{ route('pasien.logout') }}" method="POST">
                     @csrf
@@ -235,36 +235,43 @@
                 </section>
 
                 <section class="stats-grid" aria-label="Ringkasan pemeriksaan">
-                    <article class="stat-card"><div class="stat-heading">Janji mendatang<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4m8-4v4M4 10h16m-8 3v5m-2.5-2.5h5"/></svg></div><div class="stat-value">1</div><div class="stat-caption">Jumat, 9 Oktober 2026</div></article>
-                    <article class="stat-card"><div class="stat-heading">Total pemeriksaan<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4.5h6v3H9zM9 14l2 2 4-4"/></svg></div><div class="stat-value">3</div><div class="stat-caption">Seluruh kunjungan selesai</div></article>
-                    <article class="stat-card"><div class="stat-heading">Pemeriksaan terakhir<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5m4-1v5l3 2"/></svg></div><div class="stat-value">24 Sep</div><div class="stat-caption">2026 &bull; Pemeriksaan umum</div></article>
-                    <article class="stat-card"><div class="stat-heading">Status akun<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 8 3v5c0 5-3.4 8.1-8 10-4.6-1.9-8-5-8-10V6l8-3Z"/><path d="m9 12 2 2 4-4"/></svg></div><div class="stat-value">Aktif</div><div class="stat-caption">Data pasien sudah lengkap</div></article>
+                    <article class="stat-card"><div class="stat-heading">Janji mendatang<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4m8-4v4M4 10h16m-8 3v5m-2.5-2.5h5"/></svg></div><div class="stat-value">{{ $upcomingAppointmentCount }}</div><div class="stat-caption">{{ $upcomingAppointment ? $upcomingAppointment->appointment_date->locale('id')->translatedFormat('l, j F Y') : 'Tidak ada janji mendatang' }}</div></article>
+                    <article class="stat-card"><div class="stat-heading">Total pemeriksaan<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4.5h6v3H9zM9 14l2 2 4-4"/></svg></div><div class="stat-value">{{ $patientAppointmentCount }}</div><div class="stat-caption">{{ $completedCount }} selesai</div></article>
+                    <article class="stat-card"><div class="stat-heading">Pemeriksaan terakhir<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5m4-1v5l3 2"/></svg></div><div class="stat-value">{{ $latestCompletedAppointment?->appointment_date->locale('id')->translatedFormat('j M') ?? '—' }}</div><div class="stat-caption">{{ $latestCompletedAppointment?->appointment_date->format('Y') ?? 'Belum ada pemeriksaan selesai' }}</div></article>
+                    <article class="stat-card"><div class="stat-heading">Status akun<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 8 3v5c0 5-3.4 8.1-8 10-4.6-1.9-8-5-8-10V6l8-3Z"/><path d="m9 12 2 2 4-4"/></svg></div><div class="stat-value">Aktif</div><div class="stat-caption">Akun pasien aktif</div></article>
                 </section>
 
                 <div class="dashboard-grid">
                     <div class="main-stack">
                         <section class="card appointment-card" aria-labelledby="appointment-heading">
                             <div class="card-heading"><h2 id="appointment-heading">Janji pemeriksaan mendatang</h2></div>
-                            <p class="card-subtitle">Pemeriksaan Anda sudah terkonfirmasi. Sampai bertemu di klinik!</p>
-                            <div class="appointment-doctor">
-                                <img class="doctor-avatar" src="{{ asset('img/Doctor_portrait.png') }}" alt="dr. Andi">
-                                <div><span class="doctor-name">dr. Andi</span><span class="doctor-role">Dokter Umum</span></div>
-                                <span class="status-badge">Terkonfirmasi</span>
-                            </div>
-                            <div class="appointment-details">
-                                <div class="detail-item"><span class="detail-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4m8-4v4M4 10h16m-8 3v5m-2.5-2.5h5"/></svg></span><span><span class="detail-label">Tanggal pemeriksaan</span><span class="detail-value">Jumat, 9 Oktober 2026</span></span></div>
-                                <div class="detail-item"><span class="detail-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span><span class="detail-label">Waktu pemeriksaan</span><span class="detail-value">09.00–09.30 WIB</span></span></div>
-                                <div class="detail-item"><span class="detail-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span><span class="detail-label">Lokasi</span><span class="detail-value">ClinicOne &bull; Ruang 01</span></span></div>
-                                <div class="detail-item"><span class="detail-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v11H4z"/><path d="M8 7V5h8v2m-8 4h.01M8 15h.01m4-4h.01m-.01 4h.01m4-4h.01m-.01 4h.01"/></svg></span><span><span class="detail-label">Nomor antrean</span><span class="detail-value">A-012 &bull; C-261009-012</span></span></div>
-                            </div>
-                            <div class="appointment-footer"><p class="appointment-note">Mohon hadir 15 menit sebelum pemeriksaan.</p><a class="outline-button" href="#detail-janji"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>Lihat detail janji</a></div>
+                            @if ($upcomingAppointment)
+                                <p class="card-subtitle">{{ $appointmentStatusLabels[$upcomingAppointment->status] ?? $upcomingAppointment->status }}. Sampai bertemu di klinik!</p>
+                                <div class="appointment-doctor">
+                                    <img class="doctor-avatar" src="{{ $doctorPhotoUrl }}" alt="{{ $doctorDisplayName }}">
+                                    <div><span class="doctor-name">{{ $doctorDisplayName }}</span><span class="doctor-role">{{ $doctorSpecialization }}</span></div>
+                                    <span class="status-badge">{{ $appointmentStatusLabels[$upcomingAppointment->status] ?? $upcomingAppointment->status }}</span>
+                                </div>
+                                <div class="appointment-details">
+                                    <div class="detail-item"><span class="detail-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4m8-4v4M4 10h16m-8 3v5m-2.5-2.5h5"/></svg></span><span><span class="detail-label">Tanggal pemeriksaan</span><span class="detail-value">{{ $upcomingAppointment->appointment_date->locale('id')->translatedFormat('l, j F Y') }}</span></span></div>
+                                    <div class="detail-item"><span class="detail-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span><span class="detail-label">Waktu pemeriksaan</span><span class="detail-value">{{ substr($upcomingAppointment->appointment_time, 0, 5) }}–{{ \Carbon\Carbon::createFromFormat('H:i', substr($upcomingAppointment->appointment_time, 0, 5))->addMinutes(30)->format('H:i') }} WIB</span></span></div>
+                                    <div class="detail-item"><span class="detail-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v11H4z"/></svg></span><span><span class="detail-label">Keluhan / tujuan</span><span class="detail-value">{{ $upcomingAppointment->complaint }}</span></span></div>
+                                </div>
+                                <div class="appointment-footer"><p class="appointment-note">Mohon hadir 15 menit sebelum pemeriksaan.</p><a class="outline-button" href="{{ route('pasien.pendaftaran') }}">Lihat janji saya</a></div>
+                            @else
+                                <p class="card-subtitle">Anda belum memiliki janji pemeriksaan mendatang.</p>
+                                <a class="outline-button" href="{{ route('pasien.pendaftaran') }}">Daftar pemeriksaan</a>
+                            @endif
                         </section>
 
                         <section class="card history-card" id="riwayat" aria-labelledby="history-heading">
                             <div class="card-heading"><h2 id="history-heading">Pemeriksaan terakhir</h2><a class="text-link" href="#riwayat-lengkap">Lihat semua<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a></div>
                             <div class="history-list">
-                                <div class="history-row"><span class="detail-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4.5h6v3H9zM9 12h6m-6 4h4"/></svg></span><span><span class="detail-value">Pemeriksaan umum</span><span class="detail-label">ISPA ringan &bull; dr. Andi</span></span><span class="history-date">24 Sep 2026</span><span class="status-badge status-badge--small">Selesai</span></div>
-                                <div class="history-row"><span class="detail-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4.5h6v3H9zM9 12h6m-6 4h4"/></svg></span><span><span class="detail-value">Kontrol kesehatan</span><span class="detail-label">Kondisi umum baik &bull; dr. Andi</span></span><span class="history-date">10 Agu 2026</span><span class="status-badge status-badge--small">Selesai</span></div>
+                                @forelse ($recentAppointments as $recentAppointment)
+                                    <div class="history-row"><span class="detail-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4.5h6v3H9zM9 12h6m-6 4h4"/></svg></span><span><span class="detail-value">{{ $doctorSpecialization }}</span><span class="detail-label">{{ $recentAppointment->complaint }}</span></span><span class="history-date">{{ $recentAppointment->appointment_date->locale('id')->translatedFormat('j M Y') }}</span><span class="status-badge status-badge--small">{{ $appointmentStatusLabels[$recentAppointment->status] ?? $recentAppointment->status }}</span></div>
+                                @empty
+                                    <p class="card-subtitle">Belum ada pemeriksaan selesai.</p>
+                                @endforelse
                             </div>
                         </section>
                     </div>
@@ -273,11 +280,11 @@
                         <section class="card doctor-card" id="profil-dokter" aria-labelledby="doctor-heading">
                             <h2 id="doctor-heading">Dokter Anda</h2>
                             <div class="doctor-profile">
-                                <img class="doctor-avatar doctor-avatar--large" src="{{ asset('img/Doctor_portrait.png') }}" alt="dr. Andi">
-                                <div><span class="doctor-name">dr. Andi</span><span class="doctor-role">Dokter Umum</span><span class="doctor-location">ClinicOne &bull; Bandung</span></div>
+                                <img class="doctor-avatar doctor-avatar--large" src="{{ $doctorPhotoUrl }}" alt="{{ $doctorDisplayName }}">
+                                <div><span class="doctor-name">{{ $doctorDisplayName }}</span><span class="doctor-role">{{ $doctorSpecialization }}</span></div>
                             </div>
-                            <p class="doctor-description">Perawatan kesehatan umum untuk Anda dan keluarga, dengan pendekatan yang ramah dan menyeluruh.</p>
-                            <p class="doctor-hours"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Hari ini &bull; 08.00–12.00 WIB</p>
+                            <p class="doctor-description">{{ $doctorProfile?->bio ?: 'Informasi profil dokter belum tersedia.' }}</p>
+                            <p class="doctor-hours"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>{{ $clinicIsOpen ? 'Klinik sedang buka' : 'Klinik sedang tutup' }}@if ($todaySchedule?->is_open && $todaySchedule->start_time && $todaySchedule->end_time) &bull; {{ substr($todaySchedule->start_time, 0, 5) }}–{{ substr($todaySchedule->end_time, 0, 5) }} WIB @endif</p>
                             <a class="outline-button" href="{{ route('pasien.profil-dokter') }}">Lihat profil dokter</a>
                         </section>
                         <section class="card quick-card" aria-labelledby="quick-heading">

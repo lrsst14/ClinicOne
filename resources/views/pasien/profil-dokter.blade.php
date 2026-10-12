@@ -182,7 +182,7 @@
             <div class="sidebar-bottom">
                 <div class="clinic-status">
                     <div class="clinic-status-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h18M5 20V6h9v14m0-9h5v9M8 9h2m-2 4h2m-2 4h2m7-1h.01"/></svg>Klinik siap melayani</div>
-                    <p>Jam praktik: 08.00 - 12.00</p>
+                    <p>Jadwal rutin hari ini: @if ($todaySchedule?->is_open && $todaySchedule->start_time && $todaySchedule->end_time) {{ substr($todaySchedule->start_time, 0, 5) }}–{{ substr($todaySchedule->end_time, 0, 5) }} WIB @else Tutup @endif</p>
                 </div>
                 <form class="logout-form" action="{{ route('pasien.logout') }}" method="POST">
                     @csrf
@@ -216,15 +216,24 @@
                         <section class="card profile-card" aria-labelledby="doctor-name">
                             <img class="doctor-photo" src="{{ $profile?->photo_path ? route('dokter.profil.photo') : asset('img/Doctor_portrait.png') }}" alt="Foto profil dokter">
                             <div class="doctor-content">
-                                <span class="doctor-badge">Tenaga medis terdaftar</span>
-                                <h2 id="doctor-name">{{ trim(($profile?->title ? $profile->title.' ' : '').($profile?->full_name ?? 'Dokter ClinicOne')) }}</h2>
+                                @if ($profile?->str_number || $profile?->sip_number)
+                                    <span class="doctor-badge">Informasi registrasi tersedia</span>
+                                @endif
+                                <h2 id="doctor-name">{{ trim(($profile?->title ? $profile->title.' ' : '').($profile?->full_name ?? '')) ?: 'Profil dokter belum tersedia' }}</h2>
                                 <p class="doctor-specialty">{{ $profile?->specialization ?: 'Informasi spesialisasi belum tersedia.' }}</p>
                                 @if ($profile?->bio)
                                     <p class="doctor-summary">{{ $profile->bio }}</p>
                                 @endif
                                 <div class="profile-facts">
-                                    <div class="profile-fact"><span>Pengalaman</span><strong>8 tahun praktik</strong></div>
-                                    <div class="profile-fact"><span>Bahasa</span><strong>Bahasa Indonesia</strong></div>
+                                    @if ($profile?->str_number)
+                                        <div class="profile-fact"><span>Nomor STR</span><strong>{{ $profile->str_number }}</strong></div>
+                                    @endif
+                                    @if ($profile?->sip_number)
+                                        <div class="profile-fact"><span>Nomor SIP</span><strong>{{ $profile->sip_number }}</strong></div>
+                                    @endif
+                                    @unless ($profile?->str_number || $profile?->sip_number)
+                                        <div class="profile-fact"><span>Informasi registrasi</span><strong>Belum tersedia</strong></div>
+                                    @endunless
                                 </div>
                             </div>
                         </section>
@@ -233,26 +242,17 @@
                             <h2 class="section-title" id="about-title">Tentang {{ trim(($profile?->title ? $profile->title.' ' : '').($profile?->full_name ?? 'Dokter')) }}</h2>
                             <p class="about-copy">{{ $profile?->bio ?: 'Informasi tentang dokter belum tersedia.' }}</p>
                             <hr class="divider">
-                            <h3 class="service-label">Layanan pemeriksaan</h3>
-                            <div class="service-tags">
-                                <span class="service-tag">Pemeriksaan umum</span>
-                                <span class="service-tag">Konsultasi kesehatan</span>
-                                <span class="service-tag">Kontrol berkala</span>
-                                <span class="service-tag">Pemeriksaan tekanan darah</span>
-                            </div>
-                        </section>
-
-                        <section class="card" aria-labelledby="education-title">
-                            <h2 class="section-title" id="education-title">Pendidikan &amp; pengalaman</h2>
-                            <div class="education-list">
-                                <div class="education-row">
-                                    <span class="education-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9 12 4l9 5-9 5-9-5Z"/><path d="M7 11v5c3 2.5 7 2.5 10 0v-5m4-2v6"/></svg></span>
-                                    <span class="education-copy"><strong>Pendidikan profesi dokter</strong><span>Universitas Padjadjaran &bull; Lulus 2018</span></span>
-                                </div>
-                                <div class="education-row">
-                                    <span class="education-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M9 21V9h6v12M9 12h6m-3-7V3"/></svg></span>
-                                    <span class="education-copy"><strong>Dokter umum di ClinicOne</strong><span>Pelayanan kesehatan primer &bull; 2019–sekarang</span></span>
-                                </div>
+                            <h3 class="service-label">Kontak dokter</h3>
+                            <div class="profile-facts">
+                                @if ($profile?->phone)
+                                    <div class="profile-fact"><span>Telepon</span><strong>{{ $profile->phone }}</strong></div>
+                                @endif
+                                @if ($profile?->email)
+                                    <div class="profile-fact"><span>Email</span><strong>{{ $profile->email }}</strong></div>
+                                @endif
+                                @unless ($profile?->phone || $profile?->email)
+                                    <div class="profile-fact"><span>Kontak</span><strong>Belum tersedia</strong></div>
+                                @endunless
                             </div>
                         </section>
                     </div>
@@ -260,23 +260,19 @@
                     <aside class="side-stack">
                         <section class="card schedule-card" aria-labelledby="schedule-title">
                             <h2 id="schedule-title">Jadwal praktik</h2>
-                            <span class="open-badge">Klinik sedang buka</span>
+                            <span class="open-badge">{{ $clinicIsOpen ? 'Klinik sedang buka' : 'Klinik sedang tutup' }}</span>
                             <div class="hours-list">
-                                <div class="hours-row"><span>Senin–Jumat</span><strong>08.00–12.00 WIB</strong></div>
-                                <div class="hours-row"><span>Sabtu</span><strong>08.00–12.00 WIB</strong></div>
-                                <div class="hours-row"><span>Minggu</span><strong>Tutup</strong></div>
+                                @forelse ($weeklySchedules as $schedule)
+                                    @php
+                                        $dayNames = [1 => 'Senin', 2 => 'Selasa', 3 => 'Rabu', 4 => 'Kamis', 5 => 'Jumat', 6 => 'Sabtu', 7 => 'Minggu'];
+                                    @endphp
+                                    <div class="hours-row"><span>{{ $dayNames[$schedule->day_of_week] }}</span><strong>{{ $schedule->is_open && $schedule->start_time && $schedule->end_time ? substr($schedule->start_time, 0, 5).'–'.substr($schedule->end_time, 0, 5).' WIB' : 'Tutup' }}</strong></div>
+                                @empty
+                                    <div class="hours-row"><span>Jadwal</span><strong>Belum tersedia</strong></div>
+                                @endforelse
                             </div>
-                            <div class="consultation-fee"><span>Biaya konsultasi</span><strong>Rp100.000</strong></div>
                             <a class="primary-button" href="{{ route('pasien.pendaftaran') }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4m8-4v4M4 10h16m-8 4v5m-2.5-2.5h5"/></svg>Daftar pemeriksaan</a>
                             <a class="schedule-link" href="{{ route('pasien.jadwal') }}">Lihat jadwal lengkap &rarr;</a>
-                        </section>
-
-                        <section class="card location-card" aria-labelledby="location-title">
-                            <h2 id="location-title">Lokasi klinik</h2>
-                            <img class="clinic-photo" src="{{ asset('img/Clinic_interior.png') }}" alt="Interior ruang tunggu ClinicOne">
-                            <strong class="clinic-name">ClinicOne Surabaya</strong>
-                            <p class="clinic-address">Jl. Gunung Sari No. 12, Surabaya, Jawa Timur 60115</p>
-                            <a class="clinic-phone" href="tel:+628123456789"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.4 19.4 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.2-1.3a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.8 2.1Z"/></svg>(+62)8123456789</a>
                         </section>
                     </aside>
                 </div>

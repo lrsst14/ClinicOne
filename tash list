@@ -1,0 +1,16 @@
+ .../Controllers/DoctorAppointmentController.php    | 116 [32m++++++[m
+ .../Controllers/PatientAppointmentController.php   | 140 [32m+++++++[m
+ .../Requests/StorePatientAppointmentRequest.php    |  75 [32m++++[m
+ .../Requests/UpdateDoctorAppointmentRequest.php    |  49 [32m+++[m
+ app/Models/Appointment.php                         | 110 [32m+++++[m[31m-[m
+ app/Models/User.php                                |   6 [32m+[m
+ database/factories/AppointmentFactory.php          |   7 [32m+[m[31m-[m
+ ...2026_10_10_085844_create_appointments_table.php |  35 [32m++[m
+ ..._create_appointment_slot_reservations_table.php |  32 [32m++[m
+ resources/views/dokter/janji-database.blade.php    | 228 [32m++++++++++++[m
+ resources/views/dokter/kelola-janji.blade.php      |  40 [32m+[m[31m-[m
+ resources/views/pasien/pendaftaran.blade.php       | 147 [32m+++++[m[31m---[m
+ routes/web.php                                     |  12 [32m+[m[31m-[m
+ tests/Feature/DoctorAppointmentTest.php            | 201 [32m++++++++++[m
+ tests/Feature/PatientAppointmentTest.php           | 408 [32m+++++++++++++++++++++[m
+ 15 files changed, 1525 insertions(+), 81 deletions(-)

@@ -150,6 +150,12 @@ class DoctorProfileTest extends TestCase
             ->assertSee('dr. Andi Pratama')
             ->assertSee('Dokter Umum')
             ->assertSee('Melayani konsultasi keluarga.');
+
+        $this->get(route('pasien.pendaftaran'))
+            ->assertOk()
+            ->assertSee('dr. Andi Pratama')
+            ->assertSee('Dokter Umum')
+            ->assertDontSee('Dokter ClinicOne');
     }
 
     public function test_doctor_profile_updates_require_doctor_authentication(): void

@@ -196,7 +196,7 @@
             <div class="sidebar-bottom">
                 <div class="clinic-status">
                     <div class="clinic-status-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h18M5 20V6h9v14m0-9h5v9M8 9h2m-2 4h2m-2 4h2m7-1h.01"/></svg>Klinik siap melayani</div>
-                    <p>Jam praktik: 08.00 - 12.00</p>
+                    <p>Jadwal rutin hari ini: @if ($todaySchedule?->is_open && $todaySchedule->start_time && $todaySchedule->end_time) {{ substr($todaySchedule->start_time, 0, 5) }}–{{ substr($todaySchedule->end_time, 0, 5) }} WIB @else Tutup @endif</p>
                 </div>
                 <form class="logout-form" action="{{ route('pasien.logout') }}" method="POST">
                     @csrf
@@ -245,9 +245,9 @@
                         <p class="card-description">Pilih tanggal dan slot yang tersedia. Janji akan menunggu konfirmasi dokter.</p>
 
                         <div class="doctor">
-                            <img src="{{ asset('img/Doctor_portrait.png') }}" alt="Foto dr. Andi">
-                            <span><span class="doctor-name">dr. Andi</span><span class="doctor-role">Dokter Umum</span></span>
-                            <span class="badge">Pemeriksaan umum</span>
+                            <img src="{{ $doctorPhotoUrl }}" alt="Foto {{ $doctorDisplayName }}">
+                            <span><span class="doctor-name">{{ $doctorDisplayName }}</span><span class="doctor-role">{{ $doctorSpecialization }}</span></span>
+                            <span class="badge">{{ $doctorSpecialization }}</span>
                         </div>
 
                         <form method="GET" action="{{ route('pasien.pendaftaran') }}" class="info">
@@ -272,8 +272,8 @@
                                     @enderror
                                 </div>
                                 <div class="info">
-                                    <label>Jenis layanan</label>
-                                    <div class="value">Pemeriksaan umum</div>
+                                    <label>Spesialisasi dokter</label>
+                                    <div class="value">{{ $doctorSpecialization }}</div>
                                 </div>
                                 <div class="info full-width">
                                     <label for="complaint">Keluhan / tujuan kunjungan</label>
@@ -290,7 +290,13 @@
                                 <p class="hint" role="alert">{{ $message }}</p>
                             @enderror
                             <div class="form-footer">
-                                <p class="form-note">Jam praktik Senin–Kamis 08.00–12.00, Jumat 08.00–11.00.</p>
+                                <p class="form-note">
+                                    @if ($selectedDaySchedule?->is_open && $selectedDaySchedule->start_time && $selectedDaySchedule->end_time)
+                                        Jam praktik pada tanggal ini: {{ substr($selectedDaySchedule->start_time, 0, 5) }}–{{ substr($selectedDaySchedule->end_time, 0, 5) }} WIB.
+                                    @else
+                                        Dokter tidak memiliki jadwal praktik pada tanggal ini.
+                                    @endif
+                                </p>
                                 <button class="primary-button" type="submit" @disabled($availableTimes === [])>Kirim permintaan</button>
                             </div>
                         </form>

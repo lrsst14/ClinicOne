@@ -200,7 +200,7 @@
             <div class="sidebar-bottom">
                 <div class="clinic-status">
                     <div class="clinic-status-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h18M5 20V6h9v14m0-9h5v9M8 9h2m-2 4h2m-2 4h2m7-1h.01"/></svg>Klinik siap melayani</div>
-                    <p>Jam praktik: 08.00 - 12.00</p>
+                    <p>Jadwal rutin hari ini: @if ($todaySchedule && $todaySchedule['is_open'] && $todaySchedule['start_time'] && $todaySchedule['end_time']) {{ $todaySchedule['start_time'] }}–{{ $todaySchedule['end_time'] }} WIB @else Tutup @endif</p>
                 </div>
                 <form class="logout-form" action="{{ route('pasien.logout') }}" method="POST">
                     @csrf
@@ -226,22 +226,22 @@
             <main class="page-content">
                 <header class="page-heading">
                     <h1>Cek jadwal dokter</h1>
-                    <p>Lihat jadwal praktik dr. Andi dan ketersediaan waktu pemeriksaan Anda.</p>
+                    <p>Lihat jadwal praktik {{ $doctorDisplayName }} dan ketersediaan waktu pemeriksaan Anda.</p>
                 </header>
 
                 <section class="card doctor-strip" aria-label="Informasi praktik dokter">
-                    <img class="doctor-photo" src="{{ asset('img/Doctor_portrait.png') }}" alt="Foto dr. Andi">
-                    <div class="doctor-info"><span class="doctor-name">dr. Andi</span><span class="doctor-role">Dokter Umum</span></div>
+                    <img class="doctor-photo" src="{{ $doctorPhotoUrl }}" alt="Foto {{ $doctorDisplayName }}">
+                    <div class="doctor-info"><span class="doctor-name">{{ $doctorDisplayName }}</span><span class="doctor-role">{{ $doctorSpecialization }}</span></div>
                     <span class="strip-divider" aria-hidden="true"></span>
                     <span class="hours-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
-                    <span class="hours-copy"><span>Jam praktik</span><strong>Senin–Sabtu &bull; 08.00–12.00 WIB</strong></span>
-                    <span class="open-badge">Klinik sedang buka</span>
+                    <span class="hours-copy"><span>Jadwal hari ini</span><strong>@if ($todaySchedule && $todaySchedule['is_open']) {{ $todaySchedule['start_time'] }}–{{ $todaySchedule['end_time'] }} WIB @else Tutup @endif</strong></span>
+                    <span class="open-badge">{{ $clinicIsOpen ? 'Klinik sedang buka' : 'Klinik sedang tutup' }}</span>
                 </section>
 
                 <div class="schedule-layout">
                     <section class="card calendar-card" aria-labelledby="calendar-title">
                         <div class="calendar-heading">
-                            <div><h2 id="calendar-title">5–10 Oktober 2026</h2><p>Jadwal mingguan &bull; 30 menit per sesi</p></div>
+                            <div><h2 id="calendar-title"></h2><p>Jadwal mingguan &bull; 30 menit per sesi</p></div>
                             <div class="calendar-controls" aria-label="Navigasi kalender">
                                 <button class="today-button" id="today-button" type="button">Hari ini</button>
                                 <button class="week-button" id="previous-week" type="button" aria-label="Minggu sebelumnya"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
@@ -249,18 +249,9 @@
                             </div>
                         </div>
                         <div class="table-wrap">
-                            <table class="schedule-table" aria-label="Jadwal praktik dr. Andi">
-                                <thead><tr id="schedule-days"><th scope="col">WIB</th><th scope="col"><span class="day-name">Sen</span><span class="day-number">5</span></th><th scope="col"><span class="day-name">Sel</span><span class="day-number">6</span></th><th scope="col"><span class="day-name">Rab</span><span class="day-number">7</span></th><th scope="col"><span class="day-name">Kam</span><span class="day-number">8</span></th><th scope="col" class="day-today"><span class="day-name">Jum</span><span class="day-number">9</span><span class="today-caption">Hari ini</span></th><th scope="col"><span class="day-name">Sab</span><span class="day-number">10</span></th></tr></thead>
-                                <tbody id="schedule-slots">
-                                    <tr><th scope="row">08.00</th><td><span class="slot is-empty">—</span></td><td><span class="slot is-empty">—</span></td><td><span class="slot is-empty">—</span></td><td><span class="slot is-full">Penuh</span></td><td><span class="slot is-full">Penuh</span></td><td><span class="slot">Tersedia</span></td></tr>
-                                    <tr><th scope="row">08.30</th><td><span class="slot is-empty">—</span></td><td><span class="slot is-empty">—</span></td><td><span class="slot is-empty">—</span></td><td><span class="slot is-full">Penuh</span></td><td><span class="slot is-full">Penuh</span></td><td><span class="slot is-full">Penuh</span></td></tr>
-                                    <tr><th scope="row">09.00</th><td><span class="slot is-empty">—</span></td><td><span class="slot is-empty">—</span></td><td><span class="slot is-empty">—</span></td><td><span class="slot is-full">Penuh</span></td><td><span class="slot is-booked">Janji Anda</span></td><td><span class="slot">Tersedia</span></td></tr>
-                                    <tr><th scope="row">09.30</th><td><span class="slot is-empty">—</span></td><td><span class="slot is-empty">—</span></td><td><span class="slot is-empty">—</span></td><td><span class="slot is-full">Penuh</span></td><td><span class="slot is-full">Penuh</span></td><td><span class="slot">Tersedia</span></td></tr>
-                                    <tr><th scope="row">10.00</th><td><span class="slot is-empty">—</span></td><td><span class="slot is-empty">—</span></td><td><span class="slot is-empty">—</span></td><td><span class="slot">Tersedia</span></td><td><span class="slot">Tersedia</span></td><td><span class="slot">Tersedia</span></td></tr>
-                                    <tr><th scope="row">10.30</th><td><span class="slot is-empty">—</span></td><td><span class="slot is-empty">—</span></td><td><span class="slot is-empty">—</span></td><td><span class="slot">Tersedia</span></td><td><span class="slot">Tersedia</span></td><td><span class="slot">Tersedia</span></td></tr>
-                                    <tr><th scope="row">11.00</th><td><span class="slot is-empty">—</span></td><td><span class="slot is-empty">—</span></td><td><span class="slot is-empty">—</span></td><td><span class="slot">Tersedia</span></td><td><span class="slot">Tersedia</span></td><td><span class="slot">Tersedia</span></td></tr>
-                                    <tr><th scope="row">11.30</th><td><span class="slot is-empty">—</span></td><td><span class="slot is-empty">—</span></td><td><span class="slot is-empty">—</span></td><td><span class="slot">Tersedia</span></td><td><span class="slot">Tersedia</span></td><td><span class="slot">Tersedia</span></td></tr>
-                                </tbody>
+                            <table class="schedule-table" aria-label="Jadwal praktik {{ $doctorDisplayName }}">
+                                <thead><tr id="schedule-days"><th scope="col">WIB</th></tr></thead>
+                                <tbody id="schedule-slots"></tbody>
                             </table>
                         </div>
                         <div class="legend" aria-label="Keterangan jadwal">
@@ -274,20 +265,27 @@
                     <aside class="side-stack">
                         <section class="card summary-card" aria-labelledby="appointment-title">
                             <h2 id="appointment-title">Jadwal pilihan Anda</h2>
-                            <p class="summary-date">Jumat, 9 Oktober 2026</p>
-                            <span class="appointment-badge">Janji Anda &bull; Terkonfirmasi</span>
-                            <div class="summary-list">
-                                <div class="summary-row"><span class="summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span class="summary-copy"><span class="summary-label">Waktu pemeriksaan</span><span class="summary-value">09.00–09.30 WIB</span></span></div>
-                                <div class="summary-row"><span class="summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4H5a2 2 0 0 0-2 2v2a7 7 0 0 0 7 7h1a7 7 0 0 0 7-7V6a2 2 0 0 0-2-2h-2v5h4"/><path d="M11 15v1a4 4 0 0 0 4 4h2"/></svg></span><span class="summary-copy"><span class="summary-label">Nomor antrean</span><span class="summary-value">A-012 &bull; C-261009-012</span></span></div>
-                                <div class="summary-row"><span class="summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="summary-copy"><span class="summary-label">Lokasi</span><span class="summary-value">ClinicOne &bull; Ruang 01</span></span></div>
-                            </div>
+                            @if ($selectedAppointment)
+                                <p class="summary-date">{{ $selectedAppointment->appointment_date->locale('id')->translatedFormat('l, j F Y') }}</p>
+                                <span class="appointment-badge">Janji Anda &bull; {{ $appointmentStatusLabels[$selectedAppointment->status] ?? $selectedAppointment->status }}</span>
+                                <div class="summary-list">
+                                    <div class="summary-row"><span class="summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span class="summary-copy"><span class="summary-label">Waktu pemeriksaan</span><span class="summary-value">{{ substr($selectedAppointment->appointment_time, 0, 5) }}–{{ \Carbon\Carbon::createFromFormat('H:i', substr($selectedAppointment->appointment_time, 0, 5))->addMinutes(30)->format('H:i') }} WIB</span></span></div>
+                                    <div class="summary-row"><span class="summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4H5a2 2 0 0 0-2 2v2a7 7 0 0 0 7 7h1a7 7 0 0 0 7-7V6a2 2 0 0 0-2-2h-2v5h4"/><path d="M11 15v1a4 4 0 0 0 4 4h2"/></svg></span><span class="summary-copy"><span class="summary-label">Keluhan / tujuan</span><span class="summary-value">{{ $selectedAppointment->complaint }}</span></span></div>
+                                </div>
+                            @else
+                                <p class="summary-date">Belum ada janji mendatang.</p>
+                            @endif
                             <a class="booking-link" href="{{ route('pasien.pendaftaran') }}">Lihat janji saya</a>
                         </section>
 
                         <section class="card next-card" aria-labelledby="next-appointment-title">
                             <h2 id="next-appointment-title">Waktu tersedia berikutnya</h2>
-                            <p class="next-date">Besok, 10 Oktober 2026</p>
-                            <div class="next-time"><strong>10.00–10.30 WIB</strong><span class="appointment-badge">Tersedia</span></div>
+                            @if ($nextAvailableDate && $nextAvailableTime)
+                                <p class="next-date">{{ \Carbon\CarbonImmutable::parse($nextAvailableDate)->locale('id')->translatedFormat('l, j F Y') }}</p>
+                                <div class="next-time"><strong>{{ $nextAvailableTime }}–{{ \Carbon\Carbon::createFromFormat('H:i', $nextAvailableTime)->addMinutes(30)->format('H:i') }} WIB</strong><span class="appointment-badge">Tersedia</span></div>
+                            @else
+                                <p class="next-date">Belum ada slot tersedia.</p>
+                            @endif
                             <p class="next-copy">Untuk mengganti waktu kunjungan, gunakan fitur Ubah jadwal pada halaman Pendaftaran.</p>
                             <a class="booking-link" href="{{ route('pasien.pendaftaran') }}">Buka pendaftaran</a>
                         </section>
@@ -298,15 +296,46 @@
     </div>
     <script>
         (() => {
-            const calendarStart = new Date(2026, 9, 5);
-            const today = new Date(2026, 9, 9);
+            const calendarStart = new Date(@json($weekStart).'T00:00:00');
+            const today = new Date(@json($today).'T00:00:00');
+            const lastDate = @json($lastDate);
             const currentStart = new Date(calendarStart);
             const dayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
             const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-            const times = ['08.00', '08.30', '09.00', '09.30', '10.00', '10.30', '11.00', '11.30'];
+            const schedules = @json($weeklySchedules);
+            const reservationsByDate = @json($reservationsByDate);
+            const patientAppointmentsBySlot = @json($patientAppointmentsBySlot);
+            const closedDates = new Set(@json($closedDates));
+            const nowTime = @json($nowTime);
             const headings = document.getElementById('schedule-days');
             const slots = document.getElementById('schedule-slots');
             const title = document.getElementById('calendar-title');
+
+            function dateKey(date) {
+                return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+            }
+
+            function timesForWeek() {
+                const times = new Set();
+
+                Object.values(schedules).forEach((schedule) => {
+                    if (!schedule.is_open || !schedule.start_time || !schedule.end_time) {
+                        return;
+                    }
+
+                    const [startHour, startMinute] = schedule.start_time.split(':').map(Number);
+                    const [endHour, endMinute] = schedule.end_time.split(':').map(Number);
+                    let minutes = startHour * 60 + startMinute;
+                    const closingMinutes = endHour * 60 + endMinute;
+
+                    while (minutes < closingMinutes) {
+                        times.add(`${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`);
+                        minutes += 30;
+                    }
+                });
+
+                return Array.from(times).sort();
+            }
 
             function renderCalendar() {
                 const dates = Array.from({ length: 6 }, (_, index) => {
@@ -333,7 +362,7 @@
                     heading.scope = 'col';
                     heading.append(dayName, dayNumber);
 
-                    if (date.toDateString() === today.toDateString()) {
+                    if (dateKey(date) === dateKey(today)) {
                         const caption = document.createElement('span');
                         caption.className = 'today-caption';
                         caption.textContent = 'Hari ini';
@@ -345,30 +374,38 @@
                 });
 
                 slots.replaceChildren();
-                times.forEach((time, rowIndex) => {
+                timesForWeek().forEach((time) => {
                     const row = document.createElement('tr');
                     const timeHeading = document.createElement('th');
                     timeHeading.scope = 'row';
-                    timeHeading.textContent = time;
+                    timeHeading.textContent = time.replace(':', '.');
                     row.append(timeHeading);
 
                     dates.forEach((date) => {
                         const cell = document.createElement('td');
                         const status = document.createElement('span');
-                        const weekday = date.getDay();
-                        const isBooking = date.toDateString() === today.toDateString() && rowIndex === 2;
-                        let label = 'Tersedia';
-                        let statusClass = 'slot';
+                        const key = dateKey(date);
+                        const isoWeekday = date.getDay() === 0 ? 7 : date.getDay();
+                        const schedule = schedules[isoWeekday];
+                        const isWithinSchedule = schedule?.is_open
+                            && time >= schedule.start_time
+                            && time < schedule.end_time
+                            && !closedDates.has(key)
+                            && key <= lastDate;
+                        const isPast = key < dateKey(today) || (key === dateKey(today) && time <= nowTime);
+                        const isPatientAppointment = Boolean(patientAppointmentsBySlot[`${key}|${time}`]);
+                        const isReserved = (reservationsByDate[key] ?? []).includes(time);
+                        let label = '—';
+                        let statusClass = 'slot is-empty';
 
-                        if (weekday <= 3) {
-                            label = '—';
-                            statusClass += ' is-empty';
-                        } else if ((weekday === 4 && rowIndex < 4) || (weekday === 5 && (rowIndex < 2 || rowIndex === 3)) || (weekday === 6 && rowIndex === 1)) {
-                            label = 'Penuh';
-                            statusClass += ' is-full';
-                        } else if (isBooking) {
-                            label = 'Janji Anda';
-                            statusClass += ' is-booked';
+                        if (isWithinSchedule && !isPast) {
+                            label = 'Tersedia';
+                            statusClass = 'slot';
+
+                            if (isReserved) {
+                                label = isPatientAppointment ? 'Janji Anda' : 'Penuh';
+                                statusClass += isPatientAppointment ? ' is-booked' : ' is-full';
+                            }
                         }
 
                         status.className = statusClass;

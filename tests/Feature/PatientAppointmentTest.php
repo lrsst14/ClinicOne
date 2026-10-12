@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\Appointment;
+use App\Models\DoctorProfile;
+use App\Models\DoctorWeeklySchedule;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Events\QueryExecuted;
@@ -22,25 +24,25 @@ class PatientAppointmentTest extends TestCase
 
     public function test_patient_can_request_an_available_appointment(): void
     {
-        $this->travelTo('2026-10-10 07:00:00');
+        $appointmentDate = $this->nextOpenPracticeDate(1);
         $patient = User::factory()->create();
 
         $this->actingAs($patient)
             ->post(route('pasien.janji.store'), [
-                'appointment_date' => '2026-10-12',
+                'appointment_date' => $appointmentDate,
                 'appointment_time' => '09:00',
                 'complaint' => 'Demam dan pusing.',
             ])
-            ->assertRedirect(route('pasien.pendaftaran', ['date' => '2026-10-12']))
+            ->assertRedirect(route('pasien.pendaftaran', ['date' => $appointmentDate]))
             ->assertSessionHas('appointment_success');
 
         $appointment = $patient->appointments()->firstOrFail();
-        $this->assertSame('2026-10-12', $appointment->appointment_date->toDateString());
+        $this->assertSame($appointmentDate, $appointment->appointment_date->toDateString());
         $this->assertSame('09:00', substr($appointment->appointment_time, 0, 5));
         $this->assertSame('Demam dan pusing.', $appointment->complaint);
         $this->assertSame(Appointment::STATUS_PENDING, $appointment->status);
         $this->assertDatabaseHas('appointment_slot_reservations', [
-            'appointment_date' => '2026-10-12',
+            'appointment_date' => $appointmentDate,
             'appointment_time' => '09:00',
         ]);
 
@@ -224,12 +226,13 @@ class PatientAppointmentTest extends TestCase
 
     public function test_patient_cannot_book_a_past_or_current_slot_but_can_book_a_future_slot_in_jakarta_time(): void
     {
-        $this->travelTo(CarbonImmutable::parse('2026-10-12 01:00:00', 'UTC'));
+        $appointmentDate = $this->nextOpenPracticeDate(1);
+        $this->travelTo(CarbonImmutable::parse($appointmentDate.' 08:00', Appointment::TIMEZONE));
         $patient = User::factory()->create();
 
         $this->actingAs($patient)
             ->post(route('pasien.janji.store'), [
-                'appointment_date' => '2026-10-12',
+                'appointment_date' => $appointmentDate,
                 'appointment_time' => '07:30',
                 'complaint' => 'Kontrol rutin.',
             ])
@@ -237,7 +240,7 @@ class PatientAppointmentTest extends TestCase
             ->assertSessionHasErrors('appointment_time');
 
         $this->post(route('pasien.janji.store'), [
-            'appointment_date' => '2026-10-12',
+            'appointment_date' => $appointmentDate,
             'appointment_time' => '08:00',
             'complaint' => 'Kontrol rutin.',
         ])
@@ -245,45 +248,48 @@ class PatientAppointmentTest extends TestCase
             ->assertSessionHasErrors('appointment_time');
 
         $this->post(route('pasien.janji.store'), [
-            'appointment_date' => '2026-10-12',
+            'appointment_date' => $appointmentDate,
             'appointment_time' => '08:30',
             'complaint' => 'Kontrol rutin.',
         ])
-            ->assertRedirect(route('pasien.pendaftaran', ['date' => '2026-10-12']))
+            ->assertRedirect(route('pasien.pendaftaran', ['date' => $appointmentDate]))
             ->assertSessionHas('appointment_success');
 
         $appointment = Appointment::query()->firstOrFail();
-        $this->assertSame('2026-10-12', $appointment->appointment_date->toDateString());
+        $this->assertSame($appointmentDate, $appointment->appointment_date->toDateString());
         $this->assertSame('08:30', substr($appointment->appointment_time, 0, 5));
     }
 
     public function test_patient_can_book_last_practice_slots_but_not_the_closing_time(): void
     {
-        $this->travelTo(CarbonImmutable::parse('2026-10-15 22:00:00', 'UTC'));
+        $fridayDate = $this->nextOpenPracticeDate(5);
+        $mondayDate = CarbonImmutable::parse($fridayDate, Appointment::TIMEZONE)
+            ->addDays(3)
+            ->toDateString();
         $patient = User::factory()->create();
 
         $this->actingAs($patient)
             ->post(route('pasien.janji.store'), [
-                'appointment_date' => '2026-10-16',
+                'appointment_date' => $fridayDate,
                 'appointment_time' => '10:30',
                 'complaint' => 'Kontrol rutin.',
             ])
             ->assertSessionHas('appointment_success');
 
         $this->post(route('pasien.janji.store'), [
-            'appointment_date' => '2026-10-16',
+            'appointment_date' => $fridayDate,
             'appointment_time' => '11:00',
             'complaint' => 'Kontrol rutin.',
         ])->assertSessionHasErrors('appointment_time');
 
         $this->post(route('pasien.janji.store'), [
-            'appointment_date' => '2026-10-19',
+            'appointment_date' => $mondayDate,
             'appointment_time' => '11:30',
             'complaint' => 'Kontrol rutin.',
         ])->assertSessionHas('appointment_success');
 
         $this->post(route('pasien.janji.store'), [
-            'appointment_date' => '2026-10-19',
+            'appointment_date' => $mondayDate,
             'appointment_time' => '12:00',
             'complaint' => 'Kontrol rutin.',
         ])->assertSessionHasErrors('appointment_time');
@@ -293,12 +299,12 @@ class PatientAppointmentTest extends TestCase
 
     public function test_patient_can_only_cancel_their_own_appointment_and_cancelled_slot_can_be_booked_again(): void
     {
-        $this->travelTo('2026-10-10 07:00:00');
+        $appointmentDate = $this->nextOpenPracticeDate(1);
         $patient = User::factory()->create();
         $anotherPatient = User::factory()->create();
 
         $this->actingAs($patient)->post(route('pasien.janji.store'), [
-            'appointment_date' => '2026-10-12',
+            'appointment_date' => $appointmentDate,
             'appointment_time' => '09:00',
             'complaint' => 'Kontrol.',
         ]);
@@ -312,7 +318,7 @@ class PatientAppointmentTest extends TestCase
         $this->assertSame(Appointment::STATUS_PENDING, $appointment->fresh()->status);
         $this->assertDatabaseHas('appointment_slot_reservations', [
             'appointment_id' => $appointment->id,
-            'appointment_date' => '2026-10-12',
+            'appointment_date' => $appointmentDate,
             'appointment_time' => '09:00',
         ]);
 
@@ -326,7 +332,7 @@ class PatientAppointmentTest extends TestCase
 
         $this->actingAs($anotherPatient)
             ->post(route('pasien.janji.store'), [
-                'appointment_date' => '2026-10-12',
+                'appointment_date' => $appointmentDate,
                 'appointment_time' => '09:00',
                 'complaint' => 'Janji baru.',
             ])
@@ -386,6 +392,119 @@ class PatientAppointmentTest extends TestCase
         ]);
     }
 
+    public function test_patient_dashboard_displays_the_saved_doctor_and_their_own_appointment_data(): void
+    {
+        $this->travelTo('2026-10-10 07:00:00');
+        $patient = User::factory()->create(['name' => 'Rani Wijaya']);
+        $anotherPatient = User::factory()->create();
+        DoctorProfile::query()->create([
+            'full_name' => 'Dimas Pratama',
+            'title' => 'dr.',
+            'specialization' => 'Dokter Umum',
+            'bio' => 'Melayani konsultasi kesehatan.',
+        ]);
+        Appointment::factory()->create([
+            'user_id' => $patient->id,
+            'appointment_date' => '2026-10-12',
+            'appointment_time' => '09:00',
+            'complaint' => 'Keluhan pasien saat ini.',
+            'status' => Appointment::STATUS_PENDING,
+        ]);
+        Appointment::factory()->create([
+            'user_id' => $anotherPatient->id,
+            'appointment_date' => '2026-10-12',
+            'appointment_time' => '09:30',
+            'complaint' => 'Keluhan milik akun lain.',
+            'status' => Appointment::STATUS_PENDING,
+        ]);
+
+        $this->actingAs($patient)
+            ->get(route('pasien.dashboard'))
+            ->assertOk()
+            ->assertSee('Rani Wijaya')
+            ->assertSee('dr. Dimas Pratama')
+            ->assertSee('Dokter Umum')
+            ->assertSee('Keluhan pasien saat ini.')
+            ->assertDontSee('Keluhan milik akun lain.')
+            ->assertDontSee('dr. Andi');
+    }
+
+    public function test_patient_schedule_uses_saved_weekly_schedule_and_reservations(): void
+    {
+        $this->travelTo('2026-10-10 07:00:00');
+        $patient = User::factory()->create();
+        $mondaySchedule = DoctorWeeklySchedule::query()
+            ->where('day_of_week', 1)
+            ->firstOrFail();
+        $mondaySchedule->update([
+            'is_open' => true,
+            'start_time' => '09:00',
+            'end_time' => '11:00',
+        ]);
+        $appointment = Appointment::factory()->create([
+            'user_id' => $patient->id,
+            'appointment_date' => '2026-10-12',
+            'appointment_time' => '09:00',
+            'complaint' => 'Kontrol sesuai jadwal.',
+            'status' => Appointment::STATUS_PENDING,
+        ]);
+        DB::table('appointment_slot_reservations')->insert([
+            'appointment_date' => '2026-10-12',
+            'appointment_time' => '09:00',
+            'appointment_id' => $appointment->id,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $this->actingAs($patient)
+            ->get(route('pasien.jadwal'))
+            ->assertOk()
+            ->assertSee('"start_time":"09:00"', false)
+            ->assertSee('"2026-10-12":["09:00"]', false)
+            ->assertSee('"2026-10-12|09:00":true', false)
+            ->assertSee('Kontrol sesuai jadwal.')
+            ->assertDontSee('2026-10-09', false);
+    }
+
+    public function test_patient_history_displays_only_saved_appointment_and_identity_details(): void
+    {
+        $patient = User::factory()->create([
+            'name' => 'Rani Wijaya',
+            'gender' => 'Perempuan',
+            'birth_date' => '1998-05-12',
+        ]);
+        $anotherPatient = User::factory()->create(['name' => 'Dewi Lestari']);
+        Appointment::factory()->create([
+            'user_id' => $patient->id,
+            'appointment_date' => '2026-10-09',
+            'appointment_time' => '09:00',
+            'complaint' => 'Keluhan yang tersimpan.',
+            'status' => Appointment::STATUS_COMPLETED,
+        ]);
+        Appointment::factory()->create([
+            'user_id' => $anotherPatient->id,
+            'appointment_date' => '2026-10-09',
+            'appointment_time' => '09:30',
+            'complaint' => 'Keluhan akun lain.',
+            'status' => Appointment::STATUS_COMPLETED,
+        ]);
+
+        $this->actingAs($patient)
+            ->get(route('pasien.riwayat'))
+            ->assertOk()
+            ->assertSee('Rani Wijaya')
+            ->assertSee('ID akun')
+            ->assertSee((string) $patient->id)
+            ->assertSee('Perempuan')
+            ->assertSee('12 Mei 1998')
+            ->assertSee('Keluhan yang tersimpan.')
+            ->assertDontSee('Keluhan akun lain.')
+            ->assertDontSee('Dewi Lestari')
+            ->assertDontSee('Nadia Putri')
+            ->assertDontSee('118/78')
+            ->assertDontSee('RM-260924-003');
+    }
+
     public function test_patient_appointment_page_displays_only_the_signed_in_patients_records(): void
     {
         $patient = User::factory()->create();
@@ -404,5 +523,21 @@ class PatientAppointmentTest extends TestCase
             ->assertOk()
             ->assertSee('Keluhan milik pasien.')
             ->assertDontSee('Keluhan milik pasien lain.');
+    }
+
+    private function nextOpenPracticeDate(int $dayOfWeek): string
+    {
+        DoctorWeeklySchedule::query()
+            ->where('day_of_week', $dayOfWeek)
+            ->where('is_open', true)
+            ->firstOrFail();
+
+        $date = CarbonImmutable::today(Appointment::TIMEZONE)->addDay();
+
+        while ($date->dayOfWeekIso !== $dayOfWeek) {
+            $date = $date->addDay();
+        }
+
+        return $date->toDateString();
     }
 }
